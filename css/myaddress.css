@@ -1,0 +1,138 @@
+/* css/myaddresses.css */
+/* Estilos ADICIONALES para la gestión de direcciones */
+/* NO sobrescribe shipping.css, solo complementa */
+
+/* Contenedor principal */
+.addresses-container {
+    padding: 30px;
+}
+
+/* Tarjeta de dirección individual */
+.address-card-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    transition: all 0.3s;
+}
+
+.address-card-item:hover {
+    border-color: #F9BD31;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Contenido de información */
+.address-info-content {
+    flex: 1;
+}
+
+.address-street-text {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.address-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.address-details-text {
+    color: #666;
+    margin-bottom: 5px;
+    line-height: 1.5;
+    font-size: 0.95em;
+}
+
+.address-details-text:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Botón de eliminar dirección */
+.btn-delete-address {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-delete-address:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+}
+
+.btn-delete-address:active {
+    transform: translateY(0);
+}
+
+/* Estado vacío */
+.addresses-container .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.addresses-container .empty-state-icon {
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.addresses-container .empty-state-icon svg {
+    stroke: #F9BD31;
+}
+
+.addresses-container .empty-state h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.addresses-container .empty-state p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Botón de agregar (ya existe en shipping.css, solo ajustes) */
+.addresses-container .btn-add-address {
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .addresses-container {
+        padding: 20px;
+    }
+    
+    .address-card-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-delete-address {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

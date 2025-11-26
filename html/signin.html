@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/signin.css">
+    <title>Crear Cuenta - Miel de la Selva Maya</title>
+</head>
+<body>
+    <div class="container">
+        <div class="register-card">
+            <div class="logo">
+                <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+            </div>
+            
+            <h1 class="title">CREE SU CUENTA</h1>
+            
+            <form class="register-form">
+                <div class="input-group">
+                    <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="correo" placeholder="CORREO" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="tel" id="celular" placeholder="TELÉFONO (OPCIONAL)">
+                </div>
+                
+                <div class="input-group password-group">
+                    <input type="password" id="password" placeholder="CONTRASEÑA" required>
+                    <button type="button" class="toggle-password" id="toggleButton">
+                        <img src="../images/ojo.png" alt="Mostrar contraseña">
+                    </button>
+                </div>
+
+                <div class="input-group password-group">
+                    <input type="password" id="confirm-password" placeholder="CONFIRMAR CONTRASEÑA" required>
+                    <button type="button" class="toggle-password" id="toggleButton2">
+                        <img src="../images/ojo.png" alt="Mostrar contraseña">
+                    </button>
+                </div>
+                
+                <button type="submit" class="btn-entrar">ENTRAR</button>
+            </form>
+            
+            <div class="register-link">
+                <p>¿YA TIENE CUENTA? <a href="../html/login.html">INICIE SESIÓN</a></p>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../js/signin.js"></script>
+</body>
+</html>

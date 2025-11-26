@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/shipping.css">
+    <title>Dirección de Envío - Miel de la Selva Maya</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="../images/buscar.png" alt="">
+                </button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn cart-btn" onclick="window.location.href='../checkout.html'">
+                    <img src="../images/carrito-de-compras.png" alt="">
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="../images/perfil.png" alt="">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="shipping-section">
+        <div class="shipping-container">
+            <div class="shipping-card">
+                <div class="shipping-header">
+                    <button class="btn-back" onclick="window.history.back()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2>DIRECCIÓN DE ENVÍO</h2>
+                </div>
+
+                <div class="addresses-list" id="addressesList">
+                    <p id="loadingMessage" style="text-align:center; padding:20px;">Cargando direcciones...</p>
+                </div>
+
+                <div class="shipping-footer">
+                    <div class="shipping-total">
+                        <span>SUBTOTAL:</span>
+                        <span class="total-amount" id="shippingTotal">$0.00</span>
+                    </div>
+                    <button class="btn-proceed" id="btnProceedToPayment">FINALIZAR COMPRA</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="../js/shipping-address.js"></script>
+</body>
+</html>

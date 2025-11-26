@@ -1,0 +1,127 @@
+/* css/mycards.css */
+/* Estilos ADICIONALES para la gestión de tarjetas */
+/* NO sobrescribe checkout.css, solo complementa */
+
+/* Contenedor de lista de tarjetas */
+.payment-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Modificaciones específicas para vista de gestión */
+.payment-methods .payment-method-card {
+    cursor: default;
+    padding: 20px;
+}
+
+/* Contenedor interno de cada tarjeta */
+.payment-method-card .card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Información de la tarjeta */
+.payment-method-card .card-info {
+    flex: 1;
+}
+
+.payment-method-card .card-type {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payment-method-card .card-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.payment-method-card .card-details {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.payment-method-card .card-details > div {
+    margin-bottom: 4px;
+}
+
+.payment-method-card .card-details > div:last-child {
+    margin-bottom: 0;
+}
+
+/* Botón de eliminar tarjeta */
+.btn-delete-card {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.btn-delete-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+}
+
+.btn-delete-card:active {
+    transform: translateY(0);
+}
+
+/* Estado vacío */
+.payment-methods .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.payment-methods .empty-state-icon {
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.payment-methods .empty-state-icon svg {
+    stroke: #F9BD31;
+}
+
+.payment-methods .empty-state h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.payment-methods .empty-state p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .payment-method-card .card-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-delete-card {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

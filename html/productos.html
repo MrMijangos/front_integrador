@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/productos.css">
+    <link rel="stylesheet" href="../css/principal.css">
+
+    <title>Todos Nuestros Productos - Miel de la Selva Maya</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="../images/buscar.png" alt="Buscar">
+                </button>
+            </div>
+
+            <div class="header-icons">
+                <button class="icon-btn cart-btn" id="cartButton">
+                    <img src="../images/carrito-de-compras.png" alt="Ver carrito">
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="../images/perfil.png" alt="Iniciar sesión">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h2>MI CARRITO</h2>
+            <button class="cart-close-btn" id="closeCartBtn">✕</button>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="cart-sidebar-footer">
+            <div class="cart-subtotal">
+                <span>SUBTOTAL:</span>
+                <span class="cart-total-price" id="cartTotal">$0</span>
+            </div>
+            <button class="btn-checkout">PROCEDER AL PAGO</button>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <section class="features-section">
+    </section>
+
+    <section class="products-section">
+        <div class="section-header">
+            <h2 class="section-title">TODOS NUESTROS PRODUCTOS</h2>
+            <p class="section-subtitle">Los mejores de nuestros productos<br>según nuestros clientes</p>
+        </div>
+
+        <div class="products-grid">
+            <!-- Los productos se cargarán dinámicamente desde la base de datos -->
+            <p style="text-align: center; padding: 40px; color: #666;">Cargando productos...</p>
+        </div>
+    </section>
+
+    <section class="reviews-section">
+    </section>
+
+    <footer class="footer">
+    </footer>
+
+    <script type="module" src="../js/productos.js"></script>
+
+</body>
+
+</html>

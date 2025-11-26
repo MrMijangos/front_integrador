@@ -1,0 +1,475 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* ========== HEADER ========== */
+.header {
+    background-color: #1a1a1a;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.logo img:hover {
+    transform: scale(1.1);
+}
+
+.search-bar {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 50px 12px 20px;
+    border: 2px solid #F9BD31;
+    border-radius: 25px;
+    background-color: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.search-bar input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.search-btn img {
+    width: 22px;
+    height: 22px;
+}
+
+.header-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.3s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.icon-btn img {
+    width: 35px;
+    height: 35px;
+}
+
+/* ========== CHECKOUT SECTION ========== */
+.checkout-section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.checkout-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.checkout-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header del checkout */
+.checkout-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.btn-back {
+    background: white;
+    border: 2px solid #e0e0e0;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-back:hover {
+    background: #F9BD31;
+    border-color: #F9BD31;
+    transform: scale(1.1);
+}
+
+.btn-back:hover svg {
+    stroke: white;
+}
+
+.btn-back svg {
+    stroke: #666;
+    transition: stroke 0.3s;
+}
+
+.checkout-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    letter-spacing: 1px;
+}
+
+/* ========== MÉTODOS DE PAGO ========== */
+.payment-methods {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.payment-method-card {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.payment-method-card input[type="radio"] {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: #F9BD31;
+}
+
+.payment-card-visual {
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    border: 3px solid transparent;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.payment-method-card:has(input:checked) .payment-card-visual {
+    border-color: #F9BD31;
+    box-shadow: 0 4px 15px rgba(249, 189, 49, 0.3);
+}
+
+.payment-card-visual.mastercard {
+    background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+}
+
+.payment-card-visual.visa {
+    background: linear-gradient(135deg, #e8f0fe 0%, #f5f9ff 100%);
+}
+
+/* Logo Mastercard */
+.card-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mastercard-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.mastercard-circle.red {
+    background: #EB001B;
+    margin-right: -15px;
+    z-index: 1;
+}
+
+.mastercard-circle.yellow {
+    background: #F79E1B;
+    z-index: 2;
+}
+
+/* Información de la tarjeta */
+.card-number {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: right;
+    padding-right: 40px;
+}
+
+.card-number span:first-child {
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+}
+
+.card-digits {
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Botón agregar método */
+.btn-add-payment {
+    width: 100%;
+    padding: 20px;
+    background: #f5f5f5;
+    border: 3px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+    font-weight: bold;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+.btn-add-payment:hover {
+    background: #fff;
+    border-color: #F9BD31;
+    color: #F9BD31;
+}
+
+.plus-icon {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* ========== FORMULARIO ========== */
+.payment-form {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    background: #fafafa;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #F9BD31;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(249, 189, 49, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* ========== FOOTER DEL CHECKOUT ========== */
+.checkout-footer {
+    padding: 30px;
+    border-top: 2px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.checkout-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.checkout-total span:first-child {
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.total-amount {
+    font-size: 28px;
+    color: #F9BD31;
+}
+
+.btn-proceed {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(249, 189, 49, 0.3);
+    letter-spacing: 1px;
+}
+
+.btn-proceed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249, 189, 49, 0.5);
+}
+
+.btn-proceed:active {
+    transform: translateY(0);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .header-container {
+        flex-wrap: wrap;
+        padding: 0 20px;
+    }
+    
+    .search-bar {
+        order: 3;
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+    
+    .checkout-section {
+        padding: 20px 15px;
+    }
+    
+    .checkout-header {
+        padding: 20px;
+    }
+    
+    .checkout-header h2 {
+        font-size: 16px;
+    }
+    
+    .payment-methods,
+    .payment-form,
+    .checkout-footer {
+        padding: 20px;
+    }
+    
+    .payment-card-visual {
+        padding: 18px;
+    }
+    
+    .card-number {
+        padding-right: 35px;
+    }
+    
+    .card-digits {
+        font-size: 13px;
+    }
+    
+    .total-amount {
+        font-size: 24px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .icon-btn img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .checkout-card {
+        border-radius: 15px;
+    }
+    
+    .btn-back {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .payment-card-visual {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .card-number {
+        text-align: left;
+        padding-right: 0;
+    }
+    
+    .payment-method-card input[type="radio"] {
+        top: 20px;
+        right: 15px;
+    }
+}

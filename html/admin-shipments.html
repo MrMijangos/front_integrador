@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/admin.css">
+    <title>Admin Envíos - Miel de la Selva Maya</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="admin-products.html"><img src="../images/LOGO.png" alt="Logo"></a>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="window.location.href='../index.html'">🏠</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>GESTIÓN DE PEDIDOS</h1>
+            </div>
+
+            <div class="shipment-tabs">
+                <button class="tab-btn active" data-status="pending">PENDIENTES</button>
+                <button class="tab-btn" data-status="shipped">ENVIADOS</button>
+                <button class="tab-btn" data-status="delivered">ENTREGADOS</button>
+            </div>
+
+            <div class="shipments-list" id="shipmentsList">
+                <p style="text-align:center; padding:20px;">Cargando pedidos...</p>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="../js/admin-shipments.js"></script>
+</body>
+
+</html>

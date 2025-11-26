@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Ventas - Miel de la Selva Maya</title>
+    <link rel="stylesheet" href="../css/sales-analytics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../html/admin-products.html">
+                    <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            <h1>Análisis de Ventas</h1>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Productos Vendidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalUnits">0</div>
+                <div class="stat-label">Unidades Totales</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="stat-number" id="totalRevenue">$0.00</div>
+                <div class="stat-label">Ganancias Totales</div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>Cantidad Vendida por Producto</h3>
+                <div class="chart-wrapper">
+                    <canvas id="quantityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Ganancias por Producto</h3>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3>Detalle de Ventas</h3>
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad Vendida</th>
+                        <th>Ganancias</th>
+                        <th>Promedio/Unidad</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Cargando datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module" src="../js/sales-analytics.js"></script>
+</body>
+
+</html>

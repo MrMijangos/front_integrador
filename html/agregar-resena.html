@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Reseña - Miel de la Selva Maya</title>
+    <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .review-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .review-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #f4b41a;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 32px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #f4b41a;
+        }
+
+        .btn-submit-review {
+            background: linear-gradient(135deg, #f4b41a 0%, #f47c1a 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit-review:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-submit-review:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .product-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .product-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-info h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .product-info p {
+            margin: 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            <h1>Agregar Reseña</h1>
+        </div>
+    </header>
+
+    <div class="review-container">
+        <div class="review-form">
+            <h2>Escribe tu Reseña</h2>
+            
+            <div class="product-preview" id="productPreview">
+                <img id="productImage" src="" alt="Producto">
+                <div class="product-info">
+                    <h4 id="productName">Selecciona un producto</h4>
+                    <p id="productPrice">-</p>
+                </div>
+            </div>
+
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label class="form-label" for="productSelect">Seleccionar Producto *</label>
+                    <select class="form-select" id="productSelect" required>
+                        <option value="">Selecciona un producto...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Calificación *</label>
+                    <div class="rating-stars" id="ratingStars">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <input type="hidden" id="ratingValue" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="comment">Comentario *</label>
+                    <textarea class="form-textarea" id="comment" 
+                              placeholder="Comparte tu experiencia con este producto..." 
+                              required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit-review" id="submitBtn">
+                    PUBLICAR RESEÑA
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../js/agregar-resena.js"></script>
+</body>
+</html>

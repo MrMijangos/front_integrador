@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <title>Inicio de sesión</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+            </div>
+
+            <h1 class="title">BIENVENIDO</h1>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <input type="email" id="correo" placeholder="CORREO" required>
+                </div>
+
+                <div class="input-group password-group">
+                    <input type="password" id="password" placeholder="CONTRASEÑA" required>
+                    <button type="button" class="toggle-password" id="toggleButton">
+                        <img src="../images/ojo.png" alt="Mostrar contraseña">
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-entrar">ENTRAR</button>
+            </form>
+
+            <div class="register-link">
+                <p>¿NO TIENE CUENTA? <a href="signin.html">REGÍSTRESE</a></p>
+            </div>
+        </div>
+
+        <div class="image-section">
+            <img src="../images/mielabejas.jpg" alt="Miel y abejas">
+            <div class="logo-overlay">
+                <img src="../images/LOGO.png" alt="Logo">
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../js/login.js"></script>
+</body>
+
+</html>

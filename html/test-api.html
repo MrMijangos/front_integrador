@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .results {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de API - Mielería</h1>
+    
+    <div>
+        <h2>1. Autenticación</h2>
+        <button onclick="testRegister()">Registrar Usuario</button>
+        <button onclick="testLogin()">Login</button>
+        <button onclick="testGetCurrentUser()">Obtener Usuario Actual</button>
+        <button onclick="testLogout()">Logout</button>
+    </div>
+
+    <div>
+        <h2>2. Productos</h2>
+        <button onclick="testGetProducts()">Obtener Productos</button>
+        <button onclick="testCreateProduct()">Crear Producto</button>
+    </div>
+
+    <div>
+        <h2>3. Carrito</h2>
+        <button onclick="testAddToCart()">Agregar al Carrito</button>
+        <button onclick="testGetCart()">Ver Carrito</button>
+        <button onclick="testClearCart()">Vaciar Carrito</button>
+    </div>
+
+    <div>
+        <h2>4. Pagos y Envíos</h2>
+        <button onclick="testAddPayment()">Agregar Método de Pago</button>
+        <button onclick="testAddShipping()">Agregar Dirección</button>
+    </div>
+
+    <div class="results">
+        <h3>Resultados:</h3>
+        <pre id="results">Ejecuta alguna prueba...</pre>
+    </div>
+
+    <script type="module">
+        import apiClient from './common/api/api-client.js';
+        import authService from './common/api/auth-service.js';
+        import productService from './common/api/product-service.js';
+        import cartService from './common/api/cart-service.js';
+        import paymentService from './common/api/payment-service.js';
+        import shippingService from './common/api/shipping-service.js';
+
+        function showResult(data) {
+            document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+        }
+
+        // 1. Autenticación
+        window.testRegister = async () => {
+            const result = await authService.register({
+                nombre: 'Test User',
+                correo: `test${Date.now()}@test.com`,
+                contraseña: 'password123'
+            });
+            showResult(result);
+        };
+
+        window.testLogin = async () => {
+            const result = await authService.login('test@test.com', 'password123');
+            showResult(result);
+        };
+
+        window.testGetCurrentUser = async () => {
+            const user = await authService.getCurrentUser();
+            showResult(user);
+        };
+
+        window.testLogout = async () => {
+            const result = await authService.logout();
+            showResult(result);
+        };
+
+        // 2. Productos
+        window.testGetProducts = async () => {
+            const result = await productService.getAllProducts();
+            showResult(result);
+        };
+        // Continuación del script de testing
+
+        window.testCreateProduct = async () => {
+            const result = await productService.createProduct({
+                nombre: 'Miel Test',
+                precio: 150.00,
+                cantidad: 50,
+                descripcion: 'Producto de prueba',
+                imagen_base64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+            });
+            showResult(result);
+        };
+
+        // 3. Carrito
+        window.testAddToCart = async () => {
+            const result = await cartService.addToCart(1, 2);
+            showResult(result);
+        };
+
+        window.testGetCart = async () => {
+            const result = await cartService.getCartItems();
+            showResult(result);
+        };
+
+        window.testClearCart = async () => {
+            const result = await cartService.clearCart();
+            showResult(result);
+        };
+
+        // 4. Pagos y Envíos
+        window.testAddPayment = async () => {
+            const result = await paymentService.addPaymentMethod({
+                nombre_tarjeta: 'Test Card',
+                num_tarjeta: '4111111111111111',
+                fecha_expiracion: '12/25',
+                CVV: '123'
+            });
+            showResult(result);
+        };
+
+        window.testAddShipping = async () => {
+            const result = await shippingService.addAddress({
+                calle: 'Calle Test',
+                num: '123',
+                ext: 'A',
+                codigo_postal: '29000',
+                colonia: 'Centro',
+                estado: 'Chiapas',
+                municipio: 'Tuxtla Gutiérrez',
+                celular: '9611234567'
+            });
+            showResult(result);
+        };
+    </script>
+</body>
+</html>

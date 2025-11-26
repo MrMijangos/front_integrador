@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/checkout.css">
+    <title>Agregar Método de Pago - Miel de la Selva Maya</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="../images/buscar.png" alt="">
+                </button>
+            </div>
+            <div class="header-icons">
+                <button class="icon-btn cart-btn" onclick="window.location.href='../html/checkout.html'">
+                    <img src="../images/carrito-de-compras.png" alt="">
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="../images/perfil.png" alt="">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="checkout-section">
+        <div class="checkout-container">
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <button class="btn-back" onclick="window.location.href='../html/checkout.html'">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2>INGRESA MÉTODO DE PAGO</h2>
+                </div>
+
+                <form class="payment-form" id="paymentForm">
+                    <div class="form-group">
+                        <input type="text" id="cardName" placeholder="Nombre en la tarjeta" maxlength="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" id="cardNumber" placeholder="Número de tarjeta" maxlength="19" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="cardMonth" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="cardCVV" placeholder="CVV" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <!-- ✅ NUEVO: Campo para tipo de tarjeta -->
+                    <div class="form-group">
+                        <select id="cardType" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                            <option value="">Tipo de tarjeta</option>
+                            <option value="CREDITO">Crédito</option>
+                            <option value="DEBITO">Débito</option>
+                        </select>
+                    </div>
+                </form>
+
+                <div class="checkout-footer">
+                    <button class="btn-proceed" id="btnAddCard">AGREGAR MÉTODO DE PAGO</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <script type="module" src="../js/add-payment.js"></script>
+</body>
+</html>

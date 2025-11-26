@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/admin-products.css">
+    <title>Administrar Productos - Miel de la Selva Maya</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="../images/LOGO.png" alt="Logo Miel de la Selva Maya">
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="../images/buscar.png" alt="">
+                </button>
+            </div>
+
+            <div class="header-actions">
+                <span class="admin-label">Botón para ver los pedidos</span>
+                <div class="header-icons">
+                    <button class="icon-btn analytics-btn" onclick="window.location.href='sales-analytics.html'"
+                        title="Análisis de ventas">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 3v18h18" />
+                            <path d="M18 17V9" />
+                            <path d="M13 17V5" />
+                            <path d="M8 17v-3" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn orders-btn" onclick="window.location.href='admin-shipments.html'">
+                        <img src="../images/usuario (1).png" alt="Ver pedidos">
+                    </button>
+                    <button class="icon-btn user-btn" onclick="window.redirectToReviews()">
+                        <img src="../images/clasificacion.png" alt="Usuario">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="features-section">
+        <div class="features-container">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="../images/abeja-reina" alt="">
+                </div>
+                <h3 class="feature-title">Calidad</h3>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="../images/miel" alt="">
+                </div>
+                <h3 class="feature-title">Tradición</h3>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="../images/abejareina" alt="">
+                </div>
+                <h3 class="feature-title">Compromiso</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin-products-section">
+        <div class="admin-products-container">
+            <div class="section-header">
+                <h2 class="section-title">TODOS NUESTROS PRODUCTOS</h2>
+                <p class="section-subtitle">Administración del catálogo</p>
+            </div>
+
+            <div class="products-grid">
+                <p style="text-align: center;">Cargando productos...</p>
+            </div>
+
+            <div class="add-product-container">
+                <button class="btn-add-products" id="btnAddProducts">AÑADIR PRODUCTOS</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="addProductModal">
+        <div class="modal-container-add">
+            <div class="modal-header-add">
+                <button class="btn-back-modal" onclick="window.closeAddModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+            </div>
+
+            <form class="product-form-add" id="addProductForm">
+                <div class="form-fields-compact">
+                    <div class="form-group-compact">
+                        <input type="text" id="addProductName" placeholder="Nombre del producto" class="input-compact"
+                            required>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="number" id="addProductPrice" placeholder="Precio" class="input-compact" step="0.01"
+                            required>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="number" id="addProductQuantity" placeholder="Cantidad (Stock)"
+                            class="input-compact" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <textarea id="addProductDescription" placeholder="Descripción del producto"
+                            class="input-compact textarea-compact" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="text" id="addProductImageUrl" placeholder="URL de la imagen del producto"
+                            class="input-compact" required>
+                    </div>
+                    <div class="stock-display">
+                        Stock actual: <span id="stockCount">0</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-add-product-submit">AGREGAR PRODUCTO</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editProductModal">
+        <div class="modal-container-add">
+            <div class="modal-header-add">
+                <button class="btn-back-modal" onclick="window.closeEditModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+            </div>
+
+            <form class="product-form-add" id="editProductForm">
+                <div class="form-fields-compact">
+                    <div class="form-group-compact">
+                        <input type="text" id="editProductName" placeholder="Nombre del producto" class="input-compact"
+                            required>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="number" id="editProductPrice" placeholder="Precio" class="input-compact"
+                            step="0.01" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="number" id="editProductQuantity" placeholder="Cantidad (Stock)"
+                            class="input-compact" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <textarea id="editProductDescription" placeholder="Descripción del producto"
+                            class="input-compact textarea-compact" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group-compact">
+                        <input type="text" id="editProductImageUrl" placeholder="URL de la imagen del producto"
+                            class="input-compact" required>
+                    </div>
+                    <div class="stock-display">
+                        Stock actual: <span id="editStockCount">0</span>
+                    </div>
+                </div>
+
+                <div class="edit-actions">
+                    <button type="button" class="btn-delete-product" onclick="window.deleteProduct()">
+                        ELIMINAR PRODUCTO
+                    </button>
+                    <button type="submit" class="btn-add-product-submit">
+                        GUARDAR CAMBIOS
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="../images/LOGO.png" alt="Logo">
+            </div>
+            <p class="footer-text">&copy; 2024 Miel de la Selva Maya. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/admin-products.js"></script>
+</body>
+
+</html>

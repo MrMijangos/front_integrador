@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/principal.css" />
+    <title>Miel de la Selva Maya</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="./index.html">
+                    <img src="./images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="./images/buscar.png" alt="Buscar">
+                </button>
+            </div>
+
+            <div class="header-icons">
+                <button class="icon-btn cart-btn" id="cartButton">
+                    <img src="./images/carrito-de-compras.png" alt="Ver carrito">
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="./images/perfil.png" alt="Iniciar sesión">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="cart-sidebar" id="cartSidebar" aria-hidden="true">
+        <div class="cart-sidebar-header">
+            <h2>MI CARRITO</h2>
+            <button class="cart-close-btn" id="closeCartBtn" aria-label="Cerrar carrito">✕</button>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="cart-sidebar-footer">
+            <div class="cart-subtotal">
+                <span>SUBTOTAL:</span>
+                <span class="cart-total-price" id="cartTotal">$0</span>
+            </div>
+            <button class="btn-checkout">PROCEDER AL PAGO</button>
+        </div>
+    </div>
+
+    <div class="user-sidebar" id="userSidebar" aria-hidden="true">
+        <div class="user-sidebar-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img src="./images/perfil.png" alt="Usuario" id="userAvatarImg" />
+                </div>
+                <h3 class="user-name" id="userName">Usuario</h3>
+            </div>
+            <button class="user-close-btn" id="closeUserBtn" aria-label="Cerrar panel de usuario">✕</button>
+        </div>
+
+        <nav class="user-menu">
+            <button class="user-menu-item active" data-section="orders">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                <span>VER PEDIDOS</span>
+            </button>
+
+            <button class="user-menu-item" data-section="reviews">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
+                </svg>
+                <span>MIS RESEÑAS</span>
+            </button>
+
+            <button class="user-menu-item" data-section="payment">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span>MÉTODOS DE PAGO</span>
+            </button>
+
+            <button class="user-menu-item" data-section="addresses">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>DIRECCIONES DE ENVÍO</span>
+            </button>
+
+            <button class="user-menu-item logout-btn" id="logoutBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>CERRAR SESIÓN</span>
+            </button>
+        </nav>
+    </div>
+
+    <div class="user-overlay" id="userOverlay"></div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">¿QUIÉNES SOMOS?</h1>
+            <p class="hero-text">
+                Bienvenido a la esencia pura de la naturaleza. En Miel de la Selva Maya, nuestra
+                pasión es ofrecerte la miel más fina, cosechada con amor desde las abejas y
+                su entorno. Creemos en la tradición apícola, cuidando cada colmena para asegurar
+                que cada gota de nuestra miel sea un reflejo de la flora local y un tesoro de sabor y
+                bienestar natural. Desde la colmena hasta tu mesa, te invitamos a saborear la pureza
+                y la calidad que nos definen, endulzando tu vida de la manera más auténtica.
+            </p>
+        </div>
+        <div class="hero-image">
+            <img src="./images/Gemini_Generated_Image_r15tver15tver15t.png" alt="Apicultor trabajando" />
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="features-container">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="./images/abeja-reina" alt="">
+                </div>
+                <h3 class="feature-title">Calidad</h3>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="./images/miel" alt="">
+                </div>
+                <h3 class="feature-title">Tradición</h3>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="./images/abejareina" alt="">
+                </div>
+                <h3 class="feature-title">Compromiso</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="products-section">
+        <div class="section-header">
+            <h2 class="section-title">PRODUCTOS POPULARES</h2>
+            <p class="section-subtitle">Los mejores de nuestros productos<br>según nuestros clientes</p>
+        </div>
+
+        <div class="products-grid">
+            <!-- Los productos se cargarán dinámicamente desde la base de datos -->
+            <p style="text-align: center; padding: 40px; color: #666;">Cargando productos...</p>
+        </div>  
+
+        <div class="view-all-container">
+            <a href="./html/productos.html" class="btn-view-all">VER TODOS LOS PRODUCTOS</a>
+        </div>
+    </section>
+
+    <section class="reviews-section">
+        <h2 class="section-title">CLIENTES FELICES</h2>
+
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="./images/perfil.png" alt="" class="review-avatar">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para
+                            ofrecerles</p>
+                    </div>
+                </div>
+                <div class="review-footer">
+                    <span class="review-label">muy satisfecho</span>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="./images/perfil.png" alt="" class="review-avatar">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para
+                            ofrecerles</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="./images/perfil.png" alt="" class="review-avatar">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para
+                            ofrecerles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-review-container">
+            <button class="btn-add-review">AÑADIR UNA RESEÑA</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="./images/LOGO.png" alt="Logo">
+            </div>
+            <p class="footer-text">&copy; 2024 Miel de la Selva Maya. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/principal.js"></script>
+</body>
+
+</html>

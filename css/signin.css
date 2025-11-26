@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F9BD31;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.register-card {
+    background: white;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 100%;
+}
+
+.logo {
+    margin-bottom: 25px;
+}
+
+.logo img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.title {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 35px;
+    letter-spacing: 1px;
+    color: #333;
+}
+
+.register-form {
+    width: 100%;
+}
+
+.input-group {
+    margin-bottom: 18px;
+    position: relative;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #F9BD31;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(249, 189, 49, 0.1);
+}
+
+.input-group input::placeholder {
+    color: #999;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.password-group {
+    position: relative;
+}
+
+.password-group input {
+    padding-right: 50px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+}
+
+.toggle-password img {
+    width: 22px;
+    height: 22px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.toggle-password:hover img {
+    opacity: 0.8;
+}
+
+.btn-entrar {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(#ECCA5B);
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    margin-top: 10px;
+}
+
+.btn-entrar:hover {
+    transform: translateY(-2px);
+}
+
+.btn-entrar:active {
+    transform: translateY(0);
+}
+
+.register-link {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.register-link p {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.register-link a {
+    color: #3BA3E8;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.register-link a:hover {
+    color: #2B8FD1;
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .register-card {
+        padding: 40px 25px;
+        border-radius: 20px;
+    }
+    
+    .logo img {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .title {
+        font-size: 26px;
+        margin-bottom: 30px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    .input-group input {
+        padding: 14px 18px;
+        font-size: 12px;
+    }
+
+    .btn-entrar {
+        padding: 14px;
+        font-size: 14px;
+    }
+
+    .register-link p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        padding: 10px;
+    }
+
+    .register-card {
+        padding: 30px 20px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+}

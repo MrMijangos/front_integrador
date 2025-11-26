@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/checkout.css">
+    <title>Nueva Dirección - Miel de la Selva Maya</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo"><a href="../index.html"><img src="../images/LOGO.png" alt="Logo"></a></div>
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn"><img src="../images/buscar.png" alt=""></button>
+            </div>
+            <div class="header-icons">
+                <button class="icon-btn cart-btn"><img src="../images/carrito-de-compras.png" alt=""></button>
+                <button class="icon-btn user-btn"><img src="../images/perfil.png" alt=""></button>
+            </div>
+        </div>
+    </header>
+
+    <section class="checkout-section">
+        <div class="checkout-container">
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <button class="btn-back" onclick="window.history.back()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <h2>NUEVA DIRECCIÓN</h2>
+                </div>
+
+                <form class="payment-form" id="shippingForm">
+                    <div class="form-group">
+                        <label>Nombre del Destinatario</label>
+                        <input type="text" id="shippingName" placeholder="Ej: Juan Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Calle</label>
+                        <input type="text" id="shippingStreet" placeholder="Ej: Av. Siempre Viva" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Número Exterior</label>
+                            <input type="text" id="shippingNumExt" placeholder="Ej: 123" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Número Interior (opcional)</label>
+                            <input type="text" id="shippingNumInt" placeholder="Ej: Depto 5">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Colonia</label>
+                        <input type="text" id="shippingColony" placeholder="Ej: Centro" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ciudad</label>
+                            <input type="text" id="shippingCity" placeholder="Ej: Tuxtla Gutiérrez" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <input type="text" id="shippingState" placeholder="Ej: Chiapas" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código Postal</label>
+                            <input type="text" id="shippingZip" placeholder="Ej: 29000" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono de Contacto</label>
+                            <input type="text" id="shippingPhone" placeholder="10 dígitos" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Referencias (opcional)</label>
+                        <textarea id="shippingReferences" placeholder="Ej: Casa azul con portón blanco" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical; min-height: 60px;"></textarea>
+                    </div>
+                </form>
+
+                <div class="checkout-footer">
+                    <button class="btn-proceed" id="btnAddAddressBtn">GUARDAR DIRECCIÓN</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <script type="module" src="../js/add-shipping.js"></script>
+</body>
+</html>

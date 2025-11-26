@@ -1,0 +1,426 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* ========== HEADER ========== */
+.header {
+    background-color: #1a1a1a;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.logo img:hover {
+    transform: scale(1.1);
+}
+
+.search-bar {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 50px 12px 20px;
+    border: 2px solid #F9BD31;
+    border-radius: 25px;
+    background-color: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.search-bar input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.search-btn img {
+    width: 22px;
+    height: 22px;
+}
+
+.header-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.3s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.icon-btn img {
+    width: 35px;
+    height: 35px;
+}
+
+/* ========== SHIPPING SECTION ========== */
+.shipping-section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.shipping-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.shipping-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header */
+.shipping-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.btn-back {
+    background: white;
+    border: 2px solid #e0e0e0;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-back:hover {
+    background: #F9BD31;
+    border-color: #F9BD31;
+    transform: scale(1.1);
+}
+
+.btn-back:hover svg {
+    stroke: white;
+}
+
+.btn-back svg {
+    stroke: #666;
+    transition: stroke 0.3s;
+}
+
+.shipping-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    letter-spacing: 1px;
+}
+
+/* ========== LISTA DE DIRECCIONES ========== */
+.addresses-list {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.address-card {
+    position: relative;
+    padding: 25px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 3px solid transparent;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.address-card:hover {
+    background: #f5f5f5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.address-card:has(input:checked) {
+    border-color: #F9BD31;
+    background: #fffbf0;
+    box-shadow: 0 4px 15px rgba(249, 189, 49, 0.2);
+}
+
+.address-card input[type="radio"] {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: #F9BD31;
+}
+
+.address-info {
+    padding-right: 40px;
+}
+
+.address-street {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.address-details {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.address-zip {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Botón agregar dirección */
+.btn-add-address {
+    width: 100%;
+    padding: 20px;
+    background: #f5f5f5;
+    border: 3px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+    font-weight: bold;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+.btn-add-address:hover {
+    background: #fff;
+    border-color: #F9BD31;
+    color: #F9BD31;
+}
+
+.plus-icon {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* ========== FORMULARIO ========== */
+.shipping-form {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    background: #fafafa;
+    transition: all 0.3s;
+}
+
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 20px;
+    padding-right: 45px;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #F9BD31;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(249, 189, 49, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+/* ========== FOOTER ========== */
+.shipping-footer {
+    padding: 30px;
+    border-top: 2px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.shipping-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.shipping-total span:first-child {
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.total-amount {
+    font-size: 28px;
+    color: #F9BD31;
+}
+
+.btn-proceed {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(249, 189, 49, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.btn-proceed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249, 189, 49, 0.5);
+}
+
+.btn-proceed:active {
+    transform: translateY(0);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .header-container {
+        flex-wrap: wrap;
+        padding: 0 20px;
+    }
+    
+    .search-bar {
+        order: 3;
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+    
+    .shipping-section {
+        padding: 20px 15px;
+    }
+    
+    .shipping-header {
+        padding: 20px;
+    }
+    
+    .shipping-header h2 {
+        font-size: 16px;
+    }
+    
+    .addresses-list,
+    .shipping-form,
+    .shipping-footer {
+        padding: 20px;
+    }
+    
+    .address-card {
+        padding: 20px;
+    }
+    
+    .total-amount {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .icon-btn img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .shipping-card {
+        border-radius: 15px;
+    }
+    
+    .btn-back {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .address-card input[type="radio"] {
+        top: 20px;
+        right: 15px;
+    }
+}
