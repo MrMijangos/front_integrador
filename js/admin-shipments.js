@@ -2,24 +2,26 @@ import environment from '../environment/environment.js';
 import authService from '../services/auth-service.js';
 import orderService from '../common/api/order-service.js';
 
-const DEFAULT_IMAGE = '../images/productosmiel';
+const DEFAULT_IMAGE = '../images/productosmiel.jpg'; // Asegúrate que esta ruta exista
+const API_BASE_URL = environment.apiUrl;
+
+// Mapa para guardar usuarios: { 1: {nombre: "Juan", correo: "..."}, ... }
+let userMap = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('✅ admin-shipments.js cargado');
+    console.log('🚀 admin-shipments.js cargado');
 
-    if (!authService.isAuthenticated()) {
-        alert('Debes iniciar sesión como admin');
+    if (!authService.isAuthenticated() || !authService.isAdmin()) {
+        alert('Acceso restringido a administradores');
         window.location.href = '../html/login.html';
         return;
     }
 
-    if (!authService.isAdmin()) {
-        alert('No tienes permisos de administrador');
-        window.location.href = '../index.html';
-        return;
-    }
-
     setupTabs();
+    
+    // 1. Cargamos usuarios primero para tener el diccionario listo
+    await loadAllUsers();
+    // 2. Luego cargamos los pedidos
     await loadOrders();
 });
 
@@ -35,25 +37,64 @@ function setupTabs() {
     });
 }
 
+/**
+ * Obtiene TODOS los usuarios de una vez para evitar múltiples peticiones
+ */
+async function loadAllUsers() {
+    try {
+        console.log('👥 Cargando directorio de usuarios...');
+        const response = await fetch(`${API_BASE_URL}/api/usuarios`);
+        const result = await response.json();
+        
+        const users = Array.isArray(result.data) ? result.data : (Array.isArray(result) ? result : []);
+        
+        // Crear diccionario ID -> DatosUsuario
+        users.forEach(user => {
+            userMap[user.id] = {
+                nombre: user.nombreCompleto || user.nombre_completo || 'Usuario Desconocido',
+                correo: user.correo || 'Sin correo',
+                telefono: user.numCelular || user.num_celular || 'Sin teléfono'
+            };
+        });
+        
+        console.log(`✅ ${Object.keys(userMap).length} usuarios cargados en memoria.`);
+    } catch (error) {
+        console.error('❌ Error cargando usuarios:', error);
+    }
+}
+
 async function loadOrders() {
     const container = document.getElementById('shipmentsList');
+    container.innerHTML = '<p style="text-align:center; padding:20px;">Cargando pedidos...</p>';
 
     try {
-        console.log('📦 Cargando todos los pedidos...');
+        console.log('📦 Cargando pedidos...');
         const result = await orderService.getAllOrders();
 
-        console.log('📦 Resultado de pedidos:', result);
-
         if (!result.success || !result.data || result.data.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay pedidos.</p>';
+            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay pedidos registrados.</p>';
             return;
         }
 
-        renderOrders(result.data);
+        // Cruzar información: Pedido + Datos del Usuario (del userMap)
+        const ordersWithUsers = result.data.map(order => {
+            const userId = order.idUsuario || order.id_usuario || order.usuarioId;
+            const userData = userMap[userId] || { nombre: 'Cliente (ID no encontrado)', correo: '-', telefono: '-' };
+            
+            return {
+                ...order,
+                usuarioData: userData
+            };
+        });
+
+        renderOrders(ordersWithUsers);
+        
+        // Filtrar por defecto (Pendientes)
         filterShipments('pending');
+
     } catch (error) {
         console.error('❌ Error cargando pedidos:', error);
-        container.innerHTML = '<p style="color:red; text-align:center;">Error al cargar datos.</p>';
+        container.innerHTML = '<p style="color:red; text-align:center;">Error de conexión al cargar pedidos.</p>';
     }
 }
 
@@ -64,86 +105,65 @@ function renderOrders(orders) {
     console.log('🎨 Renderizando', orders.length, 'pedidos');
 
     orders.forEach(order => {
-        const orderId = order.idPedido || order.id_pedido || order.ID_Pedido || order.id;
-        const metodoPagoId = order.idMetodoPago || order.id_metodo_pago || order.metodoPagoId;
-        const direccionId = order.idDireccion || order.id_direccion || order.direccionId;
-        const usuarioId = order.idUsuario || order.id_usuario || order.usuarioId;
-
-        console.log('🔍 Pedido:', {orderId, metodoPagoId, direccionId, usuarioId});
-
-        let statusClass = 'pending';
-        let nextStatus = '';
+        const numeroPedido = order.numeroPedido || order.numero_pedido || order.NUMERO_PEDIDO || order.numero;
         
-        // ✅ CORRECCIÓN: Convertir a minúsculas para comparar
-        const estadoDB = order.estado ? order.estado.toLowerCase() : 'pendiente';
+        // Normalizar estado
+        const estadoDB = (order.estado || 'pendiente').toLowerCase();
 
-        // ✅ Estados válidos del backend: pendiente, procesando, enviado, entregado, cancelado
-        if (estadoDB === 'pendiente') {
+        // Determinar clase visual y siguiente estado lógico
+        let statusClass = 'pending';
+        let actionButton = '';
+
+        if (['pendiente', 'creado', 'procesando'].includes(estadoDB)) {
             statusClass = 'pending';
-            nextStatus = 'enviado'; // ✅ minúscula
-        } else if (estadoDB === 'procesando') {
-            statusClass = 'pending';
-            nextStatus = 'enviado'; // ✅ minúscula
-        } else if (estadoDB === 'enviado') {
+            actionButton = `<button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'ENVIADO')">MARCAR ENVIADO 🚚</button>`;
+        } else if (['enviado', 'shipped'].includes(estadoDB)) {
             statusClass = 'shipped';
-            nextStatus = 'entregado'; // ✅ minúscula
-        } else if (estadoDB === 'entregado') {
+            actionButton = `<button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'ENTREGADO')">MARCAR ENTREGADO ✅</button>`;
+        } else if (['entregado', 'delivered', 'completada'].includes(estadoDB)) {
             statusClass = 'delivered';
+            actionButton = `<span class="status-badge success">✓ COMPLETADO</span>`;
         } else if (estadoDB === 'cancelado') {
-            statusClass = 'delivered'; // O podrías crear una clase 'cancelled'
+            statusClass = 'delivered'; // Se muestra en la última pestaña o podrías crear una nueva
+            actionButton = `<span class="status-badge error">✕ CANCELADO</span>`;
         }
 
-        let actionHtml = '';
-        if (statusClass === 'pending') {
-            actionHtml = `<button 
-                class="btn-update" 
-                onclick="window.updateOrderStatus(${orderId}, 'enviado')">
-                MARCAR ENVIADO
-            </button>`;
-        } else if (statusClass === 'shipped') {
-            actionHtml = `<button 
-                class="btn-update" 
-                onclick="window.updateOrderStatus(${orderId}, 'entregado')">
-                MARCAR ENTREGADO
-            </button>`;
-        } else {
-            actionHtml = `<span style="color:green; font-weight:bold;">✓ ENTREGADO</span>`;
-        }
+        // Formatear Fecha
+        const fecha = new Date(order.fecha || order.fechaPedido || order.fecha_pedido || Date.now());
+        const fechaFormateada = fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
 
+        // Datos del Usuario (Ya inyectados en loadOrders)
+        const { nombre, correo, telefono } = order.usuarioData;
+
+        // HTML de la tarjeta
         const div = document.createElement('div');
         div.className = 'shipment-item';
         div.dataset.status = statusClass;
-        div.style.display = 'flex';
-
-        let fechaFormateada = 'N/A';
-        if (order.fecha || order.fechaPedido || order.fecha_pedido) {
-            const fecha = order.fecha || order.fechaPedido || order.fecha_pedido;
-            fechaFormateada = new Date(fecha).toLocaleDateString('es-MX');
-        }
+        div.style.display = 'flex'; // Necesario para que se vea inicialmente
 
         div.innerHTML = `
             <div class="shipment-main">
                 <div class="shipment-product">
-                    <img src="${DEFAULT_IMAGE}" alt="Pedido" class="shipment-image" onerror="this.src='${DEFAULT_IMAGE}'">
+                    <img src="../images/usuario (1).png" alt="Pedido" class="shipment-image" onerror="this.src='../images/logo-placeholder.png'">
                     <div class="product-details">
-                        <h3 class="product-name">Pedido #${orderId}</h3>
-                        <p class="product-description">Fecha: ${fechaFormateada}</p>
-                        <div class="product-quantity">Total: <strong>$${order.total || '0.00'}</strong></div>
-                        <p style="font-size: 0.9em; color: #666;">Estado: ${estadoDB.toUpperCase()}</p>
+                        <h3 class="product-name">Pedido #${numeroPedido}</h3>
+                        <p class="product-description">📅 Fecha: ${fechaFormateada}</p>
+                        <div class="product-quantity">Total: <strong>$${Number(order.total || 0).toFixed(2)}</strong></div>
+                        <p class="status-label">Estado: ${estadoDB.toUpperCase()}</p>
                     </div>
                 </div>
                 
                 <div class="shipment-info">
-                    <h4 class="customer-name">${order.nombreUsuario || order.nombre_usuario || 'Cliente'}</h4>
-                    <p class="shipping-address">
-                        ${order.direccionCompleta || order.direccion_completa || 'Dirección no disponible'} <br>
-                        <strong>Tel:</strong> ${order.telefono || order.telefonoContacto || 'N/A'}
+                    <h4 class="customer-name">👤 ${nombre}</h4>
+                    <p class="customer-contact">
+                        📧 ${correo}<br>
+                        📞 ${telefono}
                     </p>
                 </div>
             </div>
             
             <div class="shipment-actions">
-                ${actionHtml}
+                ${actionButton}
             </div>
         `;
 
@@ -151,28 +171,24 @@ function renderOrders(orders) {
     });
 }
 
+// Función global para actualizar estado
 window.updateOrderStatus = async function(orderId, newStatus) {
-    if (!confirm(`¿Estás seguro de cambiar el estado del Pedido #${orderId} a ${newStatus}?`)) {
+    if (!confirm(`¿Confirmar cambio de estado a "${newStatus}" para el pedido #${orderId}?`)) {
         return;
     }
 
     try {
-        console.log('♻️ Actualizando pedido:', orderId, 'a', newStatus);
-
         const result = await orderService.updateOrderStatus(orderId, newStatus);
 
-        console.log('✅ Resultado actualización:', result);
-
         if (result.success) {
-            showNotification(`Estado del Pedido #${orderId} actualizado a ${newStatus} correctamente`, 'success');
-            await loadOrders();
+            showNotification(`Pedido #${orderId} actualizado a ${newStatus}`, 'success');
+            await loadOrders(); // Recargar para ver cambios
         } else {
-            throw new Error(result.error || 'Error al actualizar estado');
+            throw new Error(result.error || 'Error desconocido');
         }
-
     } catch (error) {
-        console.error('❌ Error al actualizar el estado del pedido:', error);
-        showNotification(`Fallo en la actualización: ${error.message}`, 'error');
+        console.error('Error:', error);
+        showNotification(error.message, 'error');
     }
 }
 
@@ -181,7 +197,16 @@ function filterShipments(status) {
     let count = 0;
 
     items.forEach(item => {
-        if (item.dataset.status === status) {
+        // Lógica de filtrado para agrupar estados
+        const itemStatus = item.dataset.status;
+        let visible = false;
+
+        if (status === 'pending' && itemStatus === 'pending') visible = true;
+        if (status === 'shipped' && itemStatus === 'shipped') visible = true;
+        // En entregados mostramos entregados y cancelados
+        if (status === 'delivered' && (itemStatus === 'delivered' || itemStatus === 'cancelled')) visible = true;
+
+        if (visible) {
             item.style.display = 'flex';
             count++;
         } else {
@@ -189,49 +214,45 @@ function filterShipments(status) {
         }
     });
 
+    // Mensaje si no hay elementos
     const container = document.getElementById('shipmentsList');
-    const msg = document.getElementById('msg-empty');
-    if (msg) msg.remove();
+    const existingMsg = document.getElementById('msg-empty');
+    if (existingMsg) existingMsg.remove();
 
     if (count === 0) {
-        const p = document.createElement('p');
+        const p = document.createElement('div');
         p.id = 'msg-empty';
-        p.textContent = 'No hay pedidos en esta categoría.';
+        p.className = 'empty-state';
+        p.innerHTML = `
+            <div style="font-size: 40px; margin-bottom: 10px;">📭</div>
+            <h3>No hay pedidos en esta sección</h3>
+        `;
         p.style.textAlign = 'center';
-        p.style.width = '100%';
-        p.style.padding = '20px';
+        p.style.padding = '40px';
+        p.style.color = '#888';
         container.appendChild(p);
     }
 }
 
 function showNotification(message, type = 'success') {
-    const existing = document.querySelector('.notification-toast');
-    if (existing) existing.remove();
-
     const notification = document.createElement('div');
     notification.className = 'notification-toast';
-    const color = type === 'success' ? 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)' : 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
-
     notification.style.cssText = `
         position: fixed;
-        top: 90px;
+        top: 20px;
         right: 20px;
-        background: ${color};
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
         color: white;
-        padding: 16px 28px;
-        border-radius: 10px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        z-index: 3000;
-        font-size: 14px;
-        font-weight: bold;
-        transition: opacity 0.3s ease;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
     `;
     notification.textContent = message;
-
     document.body.appendChild(notification);
 
     setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
+        notification.remove();
     }, 3000);
 }

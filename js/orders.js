@@ -2,7 +2,7 @@ import orderService from '../common/api/order-service.js';
 import authService from '../services/auth-service.js';
 import cartService from '../common/api/cart-service.js';
 
-const API_BASE_URL = 'http://54.152.16.222:8081/api';
+// const API_BASE_URL...  <-- ELIMINADO: Ya no se usa aquí, el service se encarga
 const DEFAULT_IMAGE = '../images/productosmiel';
 
 window.toggleOrderMenu = function (button) {
@@ -56,7 +56,8 @@ function getStatusClass(estado) {
         'SHIPPED': 'shipped',
         'ENTREGADO': 'delivered',
         'DELIVERED': 'delivered',
-        'COMPLETADA': 'delivered'
+        'COMPLETADA': 'delivered',
+        'CANCELADO': 'cancelled' // Agregué clase para cancelado
     };
     return statusMap[estado?.toUpperCase()] || 'in-process';
 }
@@ -70,7 +71,8 @@ function getStatusText(estado) {
         'SHIPPED': 'ENVIADO',
         'ENTREGADO': 'ENTREGADO',
         'DELIVERED': 'ENTREGADO',
-        'COMPLETADA': 'ENTREGADO'
+        'COMPLETADA': 'ENTREGADO',
+        'CANCELADO': 'CANCELADO'
     };
     return textMap[estado?.toUpperCase()] || 'EN PROCESO';
 }
@@ -93,15 +95,15 @@ async function loadUserOrders() {
     ordersList.innerHTML = '<p style="text-align:center; padding:40px;">Cargando pedidos...</p>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/orders?idUsuario=${userId}`);
+        // 🔹 USO DEL SERVICE AQUÍ
+        const result = await orderService.getUserOrders(userId);
 
-        if (!response.ok) {
-            throw new Error('Error al obtener pedidos');
+        if (!result.success) {
+            throw new Error(result.error || 'Error al obtener pedidos');
         }
 
-        const orders = await response.json();
-
-        console.log(' Pedidos recibidos:', orders);
+        const orders = result.data;
+        console.log('📦 Pedidos listos para renderizar:', orders);
 
         if (!orders || orders.length === 0) {
             ordersList.innerHTML = `
@@ -119,13 +121,15 @@ async function loadUserOrders() {
             const orderId = order.idPedido || order.numeroPedido || order.id;
             const statusClass = getStatusClass(order.estado);
             const statusText = getStatusText(order.estado);
-            const canCancel = statusClass === 'in-process';
+            
+            // Solo se puede cancelar si está en proceso
+            const canCancel = (statusClass === 'in-process') && (order.estado !== 'CANCELADO');
 
             return `
                 <div class="order-item" data-order-id="${orderId}">
                     <div class="order-main">
                         <div class="order-image">
-                            <img src="${DEFAULT_IMAGE}" alt="Pedido" onerror="this.src='${DEFAULT_IMAGE}'">
+                            <img src="${DEFAULT_IMAGE}" alt="Pedido" onerror="this.src='../images/logo-placeholder.png'">
                         </div>
                         <div class="order-info">
                             <h3 class="order-product-name">Pedido #${orderId}</h3>
@@ -181,7 +185,7 @@ async function loadUserOrders() {
 
 window.repurchaseOrder = async function (orderId) {
     showNotification('Función de recompra en desarrollo...', 'info');
-    // TODO: Implementar lógica para agregar productos del pedido al carrito
+    // Aquí podrías llamar a orderService.getOrderById(orderId) y luego agregar al carrito
 }
 
 
@@ -191,28 +195,30 @@ window.cancelOrder = async function (orderId) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ estado: 'CANCELADO' })
-        });
+        // 🔹 USO DEL SERVICE AQUÍ
+        const result = await orderService.updateOrderStatus(orderId, 'CANCELADO');
 
-        if (!response.ok) throw new Error('Error al cancelar pedido');
+        if (!result.success) {
+            throw new Error(result.error || 'Error al cancelar pedido');
+        }
 
         showNotification('Pedido cancelado exitosamente', 'success');
+        
+        // Recargar la lista para ver el cambio de estado
         await loadUserOrders();
 
     } catch (error) {
         console.error('Error cancelando pedido:', error);
-        showNotification('Error al cancelar el pedido', 'error');
+        showNotification(error.message || 'Error al cancelar el pedido', 'error');
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(' orders.js cargado');
+    console.log('🚀 orders.js cargado');
 
     if (!authService.isAuthenticated()) {
-        alert('Debes iniciar sesión para ver tus pedidos');
+        // No usamos alert porque bloquea el render, mejor redirigir directo
+        console.warn('Usuario no autenticado, redirigiendo...');
         window.location.href = '../html/login.html';
         return;
     }

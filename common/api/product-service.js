@@ -46,11 +46,20 @@ const productService = {
 
     async createProduct(productData) {
         try {
-            console.log('➕ Creando producto:', productData);
+            // ✅ Mapear al formato del backend
+            const backendData = {
+                nombre: productData.nombre,
+                descripcion: productData.descripcion,
+                precio: productData.precio,
+                stock: productData.cantidad || productData.stock,
+                imagenUrl: productData.imagen || productData.imagenUrl
+            };
+
+            console.log('➕ Creando producto:', backendData);
             const response = await fetch(`${API_BASE_URL}/api/productos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(productData)
+                body: JSON.stringify(backendData)
             });
             const data = await response.json();
             console.log('✅ Producto creado:', data);
@@ -63,11 +72,20 @@ const productService = {
 
     async updateProduct(id, productData) {
         try {
-            console.log('✏️ Actualizando producto ID:', id, productData);
+            // ✅ Mapear al formato del backend
+            const backendData = {
+                nombre: productData.nombre,
+                descripcion: productData.descripcion,
+                precio: productData.precio,
+                stock: productData.cantidad || productData.stock,
+                imagenUrl: productData.imagen || productData.imagenUrl
+            };
+
+            console.log('✏️ Actualizando producto ID:', id, backendData);
             const response = await fetch(`${API_BASE_URL}/api/productos/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(productData)
+                body: JSON.stringify(backendData)
             });
 
             if (response.status === 204) {

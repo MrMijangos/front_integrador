@@ -1,4 +1,3 @@
-// js/mycards.js - CORREGIDO
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
 import navigationContext from '../common/utils/navigation-context.js';
@@ -36,23 +35,16 @@ async function loadPaymentMethods() {
 
         console.log('📋 RESPUESTA COMPLETA:', JSON.stringify(result, null, 2));
 
-        // ✅ CORRECCIÓN: Normalizar la respuesta correctamente
+        // ✅ Normalizar la respuesta correctamente
         let paymentsArr = [];
 
-        // Si result.success existe y result.data es un array
         if (result.success && Array.isArray(result.data)) {
             paymentsArr = result.data;
-        }
-        // Si result.data.data existe (doble envoltorio)
-        else if (result.data && Array.isArray(result.data.data)) {
+        } else if (result.data && Array.isArray(result.data.data)) {
             paymentsArr = result.data.data;
-        }
-        // Si result.data es un objeto con success
-        else if (result.data && result.data.success && Array.isArray(result.data.data)) {
+        } else if (result.data && result.data.success && Array.isArray(result.data.data)) {
             paymentsArr = result.data.data;
-        }
-        // Si viene directo como array
-        else if (Array.isArray(result)) {
+        } else if (Array.isArray(result)) {
             paymentsArr = result;
         }
 
@@ -81,8 +73,7 @@ async function loadPaymentMethods() {
 
         paymentsArr.forEach((card) => {
             console.log('💳 Procesando tarjeta:', card);
-            const cardId = card.idMetodoPago || card.id_metodo_pago || card.ID_MetodoPago || card.id;
-            const cardElement = createCardElement(card, cardId);
+            const cardElement = createCardElement(card);
             listContainer.appendChild(cardElement);
         });
 
@@ -100,82 +91,137 @@ async function loadPaymentMethods() {
     }
 }
 
-function createCardElement(card, cardId) {
+function createCardElement(card) {
     const div = document.createElement('div');
     div.className = 'payment-method-card';
     div.style.cssText = `
         border: 2px solid #e0e0e0;
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #fff;
-        transition: all 0.3s;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 24px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
     `;
 
-    // ✅ CORRECCIÓN: Usar el ID correcto del backend
-    const realCardId = card.idMetodoPago || card.ID_Metodo_Pago || cardId;
+    // ✅ Extraer datos del backend
+    const cardId = card.id || card.idMetodoPago || card.id_metodo_pago;
+    const tipoTarjeta = (card.tipoTarjeta || card.tipo_tarjeta || 'credito').toUpperCase();
+    const nombreTitular = card.nombreTitular || card.nombre_titular || 'Titular';
+    const ultimosDigitos = card.ultimosDigitos || card.ultimos_digitos || '****';
+    const mesExpiracion = String(card.mesExpiracion || card.mes_expiracion || '00').padStart(2, '0');
+    const anioExpiracion = card.anioExpiracion || card.anio_expiracion || '0000';
+    const esPredeterminado = card.esPredeterminado || card.es_predeterminado || false;
+
+    // ✅ Determinar icono y color según el tipo
+    let cardIcon = '💳';
+    let cardColor = '#4CAF50';
     
-    let lastDigits = '****';
-    let expiration = '';
-    let cardHolder = '';
-
-    if (card.detalles) {
-        const details = card.detalles;
-        const digitsMatch = details.match(/terminada en (\d{4})/);
-        if (digitsMatch) lastDigits = digitsMatch[1];
-
-        const expMatch = details.match(/Exp: ([\d\/]+)/);
-        if (expMatch) expiration = expMatch[1];
-
-        const holderMatch = details.match(/Titular: ([^|]+)/);
-        if (holderMatch) cardHolder = holderMatch[1].trim();
+    if (tipoTarjeta.includes('VISA')) {
+        cardIcon = '💳';
+        cardColor = '#1A1F71';
+    } else if (tipoTarjeta.includes('MASTERCARD')) {
+        cardIcon = '💳';
+        cardColor = '#EB001B';
+    } else if (tipoTarjeta.includes('DEBITO')) {
+        cardIcon = '💳';
+        cardColor = '#2196F3';
+    } else if (tipoTarjeta.includes('CREDITO')) {
+        cardIcon = '💳';
+        cardColor = '#F9BD31';
     }
 
-    const cardType = card.tipo || 'Tarjeta';
-
     div.innerHTML = `
-        <div style="flex-grow:1;">
-            <div style="font-weight:bold; margin:0 0 8px 0; font-size: 1.1em; color: #333; display: flex; align-items: center; gap: 8px;">
-                <span style="display:inline-block; width:20px; height:20px; background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%); border-radius:4px;"></span>
-                <span>${cardType}</span>
-            </div>
-            <div style="color:#666; font-size: 0.95em;">
-                <div style="margin-bottom: 4px;">•••• •••• •••• ${lastDigits}</div>
-                ${expiration ? `<div style="font-size: 0.9em; color: #888;">Exp: ${expiration}</div>` : ''}
-                ${cardHolder ? `<div style="font-size: 0.9em; color: #888;">${cardHolder}</div>` : ''}
-            </div>
-        </div>
+        <!-- Decoración de fondo -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: ${cardColor}15; border-radius: 50%; z-index: 0;"></div>
         
-        <button class="btn-delete-card" onclick="deleteCard(${realCardId}, '${lastDigits}')" style="
-            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
-            flex-shrink: 0;
-        " title="Eliminar tarjeta">
-            ELIMINAR
-        </button>
+        <div style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center;">
+            <!-- Información de la tarjeta -->
+            <div style="flex-grow: 1;">
+                <!-- Tipo de tarjeta -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <span style="font-size: 32px;">${cardIcon}</span>
+                    <div>
+                        <div style="font-weight: bold; font-size: 1.2em; color: #333; text-transform: uppercase;">
+                            ${tipoTarjeta}
+                        </div>
+                        ${esPredeterminado ? '<span style="display: inline-block; background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%); color: white; padding: 3px 10px; border-radius: 6px; font-size: 0.7em; font-weight: bold; margin-top: 4px;">PREDETERMINADA</span>' : ''}
+                    </div>
+                </div>
+
+                <!-- Nombre del titular -->
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                        Titular
+                    </div>
+                    <div style="font-weight: 600; font-size: 1.05em; color: #333;">
+                        ${nombreTitular}
+                    </div>
+                </div>
+
+                <!-- Número de tarjeta -->
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                        Número de tarjeta
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 1.2em; font-weight: bold; color: #555; letter-spacing: 2px;">
+                        •••• •••• •••• ${ultimosDigitos}
+                    </div>
+                </div>
+
+                <!-- Fecha de expiración -->
+                <div>
+                    <div style="font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                        Vencimiento
+                    </div>
+                    <div style="font-weight: 600; font-size: 0.95em; color: #555;">
+                        ${mesExpiracion}/${anioExpiracion}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de eliminar -->
+            <button class="btn-delete-card" onclick="deleteCard(${cardId}, '${ultimosDigitos}')" style="
+                background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+                color: white;
+                border: none;
+                padding: 14px 28px;
+                border-radius: 12px;
+                font-size: 13px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
+                flex-shrink: 0;
+                margin-left: 24px;
+            " 
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(229, 57, 53, 0.4)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(229, 57, 53, 0.3)'"
+            title="Eliminar tarjeta">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                ELIMINAR
+            </button>
+        </div>
     `;
 
+    // ✅ Efecto hover en toda la tarjeta
     div.onmouseover = () => {
-        div.style.borderColor = '#F9BD31';
-        div.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+        div.style.borderColor = cardColor;
+        div.style.boxShadow = `0 6px 20px ${cardColor}30`;
+        div.style.transform = 'translateY(-4px)';
     };
+    
     div.onmouseout = () => {
         div.style.borderColor = '#e0e0e0';
-        div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+        div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+        div.style.transform = 'translateY(0)';
     };
 
     return div;

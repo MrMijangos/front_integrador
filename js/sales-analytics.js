@@ -32,31 +32,28 @@ class SalesAnalytics {
         try {
             console.log('📊 Cargando datos de ventas...');
 
-            // ✅ RUTA CORRECTA del backend
             const response = await apiClient.get('/api/analytics/ventas');
 
             console.log('📊 Respuesta completa:', response);
 
-            if (!response || !response.data) {
-                throw new Error('No se recibieron datos del servidor');
+            if (!response || !response.data || !response.data.success) {
+                throw new Error('No se recibieron datos válidos del servidor');
             }
 
-            // ✅ Estructura del backend: response.data.data.detallePorProducto
-            let salesArray = [];
-            
-            if (response.data && response.data.detallePorProducto) {
-                salesArray = response.data.detallePorProducto;
-            } else if (response.data && Array.isArray(response.data)) {
-                salesArray = response.data;
-            }
+            // ✅ Estructura correcta: response.data.data contiene el AnalyticsResponse
+            const analyticsData = response.data.data;
 
-            console.log('📊 Datos de ventas procesados:', salesArray);
+            console.log('📊 Analytics data:', analyticsData);
+
+            if (!analyticsData || !analyticsData.detallePorProducto) {
+                throw new Error('Estructura de datos inválida');
+            }
 
             // ✅ Mapear a estructura esperada por el frontend
-            this.salesData = salesArray.map(item => ({
-                nombre: item.productoNombre || item.nombre_producto || item.nombre,
-                cantidadVendida: item.cantidadVendida || item.total_cantidad || 0,
-                ganancias: parseFloat(item.gananciaTotal || item.total_ganancia || 0)
+            this.salesData = analyticsData.detallePorProducto.map(item => ({
+                nombre: item.productoNombre,
+                cantidadVendida: item.cantidadVendida,
+                ganancias: parseFloat(item.gananciaTotal)
             }));
 
             console.log('✅ Datos mapeados:', this.salesData);
@@ -66,7 +63,8 @@ class SalesAnalytics {
                 return;
             }
 
-            this.updateStats();
+            // ✅ Actualizar estadísticas con datos del backend
+            this.updateStatsFromBackend(analyticsData);
             this.renderCharts();
             this.renderTable();
 
@@ -76,14 +74,34 @@ class SalesAnalytics {
         }
     }
 
+    updateStatsFromBackend(analyticsData) {
+        // Usar los datos ya calculados por el backend
+        document.getElementById('totalProducts').textContent = 
+            analyticsData.totalProductosDiferentes;
+        
+        document.getElementById('totalUnits').textContent = 
+            analyticsData.totalUnidadesVendidas.toLocaleString();
+        
+        document.getElementById('totalRevenue').textContent = 
+            `$${parseFloat(analyticsData.gananciasTotales).toLocaleString('es-MX', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            })}`;
+    }
+
     updateStats() {
+        // Fallback: calcular desde los datos si es necesario
         const totalProducts = this.salesData.length;
         const totalUnits = this.salesData.reduce((sum, item) => sum + item.cantidadVendida, 0);
         const totalRevenue = this.salesData.reduce((sum, item) => sum + item.ganancias, 0);
 
         document.getElementById('totalProducts').textContent = totalProducts;
         document.getElementById('totalUnits').textContent = totalUnits.toLocaleString();
-        document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('totalRevenue').textContent = 
+            `$${totalRevenue.toLocaleString('es-MX', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            })}`;
     }
 
     renderCharts() {
@@ -207,7 +225,9 @@ class SalesAnalytics {
                         },
                         callbacks: {
                             label: function (context) {
-                                return `Ganancias: $${context.parsed.y.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+                                return `Ganancias: $${context.parsed.y.toLocaleString('es-MX', { 
+                                    minimumFractionDigits: 2 
+                                })}`;
                             }
                         }
                     }
@@ -248,7 +268,13 @@ class SalesAnalytics {
         const tbody = document.getElementById('salesTableBody');
 
         if (this.salesData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay datos de ventas disponibles</td></tr>';
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        No hay datos de ventas disponibles
+                    </td>
+                </tr>
+            `;
             return;
         }
 
@@ -258,8 +284,14 @@ class SalesAnalytics {
                 <tr>
                     <td><strong>${item.nombre}</strong></td>
                     <td>${item.cantidadVendida} unidades</td>
-                    <td>$${item.ganancias.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                    <td>$${avgPrice.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>$${item.ganancias.toLocaleString('es-MX', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    })}</td>
+                    <td>$${avgPrice.toLocaleString('es-MX', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    })}</td>
                 </tr>
             `;
         }).join('');
@@ -275,8 +307,12 @@ class SalesAnalytics {
             <tr>
                 <td colspan="4" style="text-align: center; padding: 3rem;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <h3 style="color: #718096; margin-bottom: 0.5rem;">No hay datos de ventas</h3>
-                    <p style="color: #a0aec0;">Aún no se han registrado ventas de productos</p>
+                    <h3 style="color: #718096; margin-bottom: 0.5rem;">
+                        No hay datos de ventas
+                    </h3>
+                    <p style="color: #a0aec0;">
+                        Aún no se han registrado ventas de productos
+                    </p>
                 </td>
             </tr>
         `;

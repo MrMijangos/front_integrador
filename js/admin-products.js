@@ -2,7 +2,8 @@ import environment from "../environment/environment.js";
 import authService from '../services/auth-service.js';
 
 let currentProductId = null;
-const API_BASE_URL = `${environment.apiUrl}/api`;  
+const API_BASE_URL = `${environment.apiUrl}/api`;
+const DEFAULT_IMAGE = '../images/productosmiel.jpg'; // ✅ IMAGEN POR DEFECTO CORREGIDA
 
 const productService = {
     async getAllProducts() {
@@ -38,7 +39,7 @@ const productService = {
                 descripcion: productData.descripcion,
                 precio: productData.precio,
                 stock: productData.cantidad,
-                imagenUrl: productData.imagen  // ✅ Cambiado de 'imagen' a 'imagenUrl'
+                imagenUrl: productData.imagen  // ✅ Backend espera imagenUrl
             };
 
             console.log('➕ Creando producto:', backendData);
@@ -63,7 +64,7 @@ const productService = {
                 descripcion: productData.descripcion,
                 precio: productData.precio,
                 stock: productData.cantidad,
-                imagen: productData.imagen_base64 || productData.imagen
+                imagenUrl: productData.imagen  // ✅ Backend espera imagenUrl
             };
 
             console.log('✏️ Actualizando producto ID:', id, backendData);
@@ -109,7 +110,6 @@ const productService = {
     }
 };
 
-
 async function loadProducts() {
     const productsGrid = document.querySelector('.products-grid');
     if (!productsGrid) {
@@ -129,10 +129,9 @@ async function loadProducts() {
 
             if (products.length > 0) {
                 productsGrid.innerHTML = products.map(product => {
-                    const id = product.idProducto || product.ID_Producto || product.id_producto || product.id;
-                    const imagen = product.imagen && product.imagen.trim() !== '' 
-                        ? product.imagen 
-                        : '../images/productosmiel.jpg';
+                    // ✅ USAR ID Y IMAGEN_URL CORRECTAMENTE
+                    const id = product.id || product.idProducto || product.ID_Producto || product.id_producto;
+                    const imagen = product.imagenUrl || product.imagen_url || product.imagen || DEFAULT_IMAGE;
                     const stock = product.stock !== undefined ? product.stock : (product.Stock || 0);
 
                     return `
@@ -140,7 +139,7 @@ async function loadProducts() {
                             <div class="product-image">
                                 <img src="${imagen}" 
                                      alt="${product.nombre}" 
-                                     onerror="this.src='../images/productosmiel.jpg'">
+                                     onerror="this.src='${DEFAULT_IMAGE}'">
                             </div>
                             <h3 class="product-name">${product.nombre}</h3>
                             <p class="product-price">$${product.precio ? Number(product.precio).toFixed(2) : '0.00'}</p>
@@ -174,8 +173,6 @@ async function loadProducts() {
     }
 }
 
-
-
 async function openEditModal(productId) {
     const modal = document.getElementById('editProductModal');
     if (modal) {
@@ -188,6 +185,7 @@ async function openEditModal(productId) {
 
         if (result.success && result.data) {
             const product = result.data;
+            // ✅ USAR IMAGEN_URL DEL BACKEND
             const imagenUrl = product.imagenUrl || product.imagen_url || product.imagen || '';
 
             document.getElementById('editProductName').value = product.nombre || '';
@@ -342,13 +340,10 @@ async function updateProductInternal(productData) {
     }
 }
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ admin-products.js cargado correctamente');
     console.log('🌐 API_BASE_URL:', API_BASE_URL);
 
-    // 🔍 VERIFICACIÓN DE AUTENTICACIÓN CON LOGS
     console.log('🔍 Verificando autenticación...');
     const isAuth = authService.isAuthenticated();
     console.log('🔍 ¿Está autenticado?', isAuth);
@@ -373,7 +368,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ Usuario admin verificado - Cargando productos');
     await loadProducts();
 
-    // 🔘 CONFIGURAR BOTÓN DE AÑADIR PRODUCTO
     const btnAdd = document.getElementById('btnAddProducts');
     console.log('🔍 Buscando botón con ID: btnAddProducts');
     console.log('🔍 Botón encontrado:', btnAdd);
@@ -386,14 +380,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     } else {
         console.error('❌ No se encontró el botón con ID: btnAddProducts');
-        const allButtons = document.querySelectorAll('button');
-        console.log('🔍 Botones disponibles en la página:', 
-            Array.from(allButtons).map(b => ({
-                id: b.id,
-                class: b.className,
-                text: b.textContent.trim().substring(0, 50)
-            }))
-        );
     }
 
     setupEventListeners();
@@ -426,8 +412,6 @@ function setupEventListeners() {
         console.log('✅ Event listener agregado a editProductForm');
     }
 }
-
-
 
 function showNotification(message, type = 'success') {
     const existing = document.querySelector('.notification-toast');

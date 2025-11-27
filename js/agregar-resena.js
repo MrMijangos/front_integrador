@@ -6,10 +6,11 @@ class ReviewManager {
     constructor() {
         this.selectedRating = 0;
         this.selectedProduct = null;
+        this.myReviews = []; // ✅ Almacenar las reseñas del usuario
         this.init();
     }
 
-    init() {
+    async init() {
         if (!authService.isAuthenticated()) {
             this.showNotification('Debes iniciar sesión para agregar una reseña', 'error');
             setTimeout(() => {
@@ -18,8 +19,37 @@ class ReviewManager {
             return;
         }
 
-        this.loadProducts();
+        // ✅ Cargar las reseñas del usuario primero
+        await this.loadMyReviews();
+        
+        await this.loadProducts();
         this.setupEventListeners();
+    }
+
+    // ✅ NUEVA FUNCIÓN: Cargar las reseñas existentes del usuario
+    async loadMyReviews() {
+        try {
+            console.log('📋 Cargando mis reseñas existentes...');
+            const result = await reviewService.getMyReviews();
+            
+            if (result.success && result.data) {
+                this.myReviews = result.data;
+                console.log('✅ Reseñas del usuario:', this.myReviews);
+            }
+        } catch (error) {
+            console.error('❌ Error cargando reseñas del usuario:', error);
+        }
+    }
+
+    // ✅ NUEVA FUNCIÓN: Verificar si ya existe una reseña para este producto
+    hasReviewForProduct(productId) {
+        return this.myReviews.some(review => {
+            const reviewProductId = review.productoId || 
+                                   review.producto_id || 
+                                   review.idProducto || 
+                                   review.id_producto;
+            return parseInt(reviewProductId) === parseInt(productId);
+        });
     }
 
     async loadProducts() {
@@ -41,11 +71,19 @@ class ReviewManager {
         select.innerHTML = '<option value="">Selecciona un producto...</option>';
 
         products.forEach(product => {
-            const id = product.idProducto || product.ID_Producto || product.id;
+            const id = product.id || product.idProducto || product.ID_Producto || product.id_producto;
             const option = document.createElement('option');
             option.value = id;
             option.textContent = `${product.nombre} - $${Number(product.precio).toFixed(2)}`;
             option.dataset.product = JSON.stringify(product);
+            
+            // ✅ Marcar visualmente si ya tiene reseña
+            if (this.hasReviewForProduct(id)) {
+                option.textContent += ' ⭐ (Ya reseñado)';
+                option.style.color = '#999';
+                option.style.fontStyle = 'italic';
+            }
+            
             select.appendChild(option);
         });
     }
@@ -84,28 +122,93 @@ class ReviewManager {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         if (selectedOption.value) {
             this.selectedProduct = JSON.parse(selectedOption.dataset.product);
+            
+            // ✅ Verificar si ya tiene reseña para este producto
+            const productId = this.selectedProduct.id || 
+                            this.selectedProduct.idProducto || 
+                            this.selectedProduct.ID_Producto || 
+                            this.selectedProduct.id_producto;
+            
+            if (this.hasReviewForProduct(productId)) {
+                this.showWarningBanner(
+                    '⚠️ Ya has dejado una reseña para este producto. ' +
+                    'Si deseas cambiarla, primero elimina la reseña existente desde "Mis Reseñas".'
+                );
+            } else {
+                this.hideWarningBanner();
+            }
+            
             this.updateProductPreview();
         } else {
             this.selectedProduct = null;
             this.clearProductPreview();
+            this.hideWarningBanner();
+        }
+    }
+
+    // ✅ NUEVA FUNCIÓN: Mostrar banner de advertencia
+    showWarningBanner(message) {
+        // Eliminar banner existente si hay alguno
+        this.hideWarningBanner();
+        
+        const banner = document.createElement('div');
+        banner.id = 'warningBanner';
+        banner.style.cssText = `
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+        `;
+        
+        banner.innerHTML = `
+            <span style="font-size: 24px;">⚠️</span>
+            <div style="flex: 1;">
+                ${message}
+                <br>
+                <a href="./my-reviews.html" style="color: white; text-decoration: underline; font-weight: bold; margin-top: 5px; display: inline-block;">
+                    Ver mis reseñas →
+                </a>
+            </div>
+        `;
+        
+        const form = document.getElementById('reviewForm');
+        form.insertBefore(banner, form.firstChild);
+    }
+
+    // ✅ NUEVA FUNCIÓN: Ocultar banner de advertencia
+    hideWarningBanner() {
+        const existingBanner = document.getElementById('warningBanner');
+        if (existingBanner) {
+            existingBanner.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => existingBanner.remove(), 300);
         }
     }
 
     updateProductPreview() {
         if (this.selectedProduct) {
             const imgElement = document.getElementById('productImage');
-
-            imgElement.onerror = null;
+            
+            // ✅ Usar imagenUrl del backend
+            const imgSrc = this.selectedProduct.imagenUrl || 
+                          this.selectedProduct.imagen_url || 
+                          this.selectedProduct.imagen || 
+                          '../images/productosmiel.jpg';
 
             imgElement.onerror = () => {
                 imgElement.onerror = null;
-
-                imgElement.src = '../images/productosmiel';
-
-
+                imgElement.src = '../images/productosmiel.jpg';
             };
 
-            imgElement.src = this.selectedProduct.imagen || '../images/productosmiel';
+            imgElement.src = imgSrc;
 
             document.getElementById('productName').textContent = this.selectedProduct.nombre;
             document.getElementById('productPrice').textContent =
@@ -130,6 +233,16 @@ class ReviewManager {
             return;
         }
 
+        // ✅ VALIDACIÓN CRÍTICA: Verificar si ya existe una reseña
+        if (this.hasReviewForProduct(productId)) {
+            this.showNotification(
+                '⚠️ Ya has dejado una reseña para este producto. ' +
+                'Para cambiarla, primero elimina la reseña existente.',
+                'error'
+            );
+            return;
+        }
+
         if (!rating) {
             this.showNotification('Por favor selecciona una calificación', 'error');
             return;
@@ -137,6 +250,11 @@ class ReviewManager {
 
         if (!comment) {
             this.showNotification('Por favor escribe un comentario', 'error');
+            return;
+        }
+
+        if (comment.length < 10) {
+            this.showNotification('El comentario debe tener al menos 10 caracteres', 'error');
             return;
         }
 
@@ -154,18 +272,26 @@ class ReviewManager {
 
             if (result.success) {
                 this.showNotification('¡Reseña publicada exitosamente!', 'success');
+                
+                // ✅ Recargar las reseñas del usuario
+                await this.loadMyReviews();
+                
                 // Limpiar formulario
                 document.getElementById('reviewForm').reset();
                 this.selectedRating = 0;
                 this.selectedProduct = null;
                 this.clearProductPreview();
+                this.hideWarningBanner();
                 document.querySelectorAll('.star').forEach(star => {
                     star.classList.remove('active');
                 });
 
-                /*setTimeout(() => {
+                // ✅ Actualizar el select para mostrar que ya fue reseñado
+                await this.loadProducts();
+
+                setTimeout(() => {
                     window.location.href = './my-reviews.html';
-                }, 2000);*/
+                }, 2000);
             } else {
                 this.showNotification(result.error || 'Error al publicar reseña', 'error');
             }
@@ -179,25 +305,37 @@ class ReviewManager {
     }
 
     showNotification(message, type = 'info') {
+        const existing = document.querySelector('.notification-custom');
+        if (existing) existing.remove();
+
         const notification = document.createElement('div');
-        notification.className = 'notification';
+        notification.className = 'notification-custom';
+        
+        const colors = {
+            success: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+            error: 'linear-gradient(135deg, #f44336 0%, #e53935 100%)',
+            info: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)'
+        };
+
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+            background: ${colors[type] || colors.info};
             color: white;
             padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             z-index: 10000;
             font-family: Arial, sans-serif;
             font-size: 14px;
+            font-weight: 500;
             min-width: 250px;
-            max-width: 400px;
+            max-width: 450px;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.3s ease;
+            line-height: 1.5;
         `;
 
         notification.textContent = message;
@@ -212,9 +350,36 @@ class ReviewManager {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, 5000);
     }
 }
+
+// ✅ Agregar estilos de animación
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+`;
+document.head.appendChild(style);
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {

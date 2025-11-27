@@ -1,44 +1,60 @@
-import apiClient from './api-client.js';
+import environment from '../../environment/environment.js';
 
-class OrderService {
+const API_BASE_URL = environment.apiUrl;
+
+const orderService = {
+    
     async createOrder(orderData) {
         try {
             console.log('📦 INICIANDO createOrder con datos:', orderData);
 
+            // Obtener datos del usuario del localStorage
             const userDataString = localStorage.getItem('userData') || localStorage.getItem('usuario');
             const userData = userDataString ? JSON.parse(userDataString) : null;
-
+            
+            // Buscar ID en orderData o en localStorage
             const userId = orderData.idUsuario || userData?.id || userData?.idUsuario || userData?.id_usuario || userData?.ID_Usuario;
 
             if (!userId) {
                 console.error('❌ No se pudo obtener el ID del usuario');
-                throw new Error("Usuario no identificado");
+                return { success: false, error: "Usuario no identificado" };
             }
 
             console.log('✅ ID de usuario obtenido:', userId);
 
-            // ✅ CORRECCIÓN: Campos correctos según CreatePedidoRequest.java
-            const requestBody = {
+            // Mapeo del body según backend
+            const backendData = {
                 metodoPagoId: parseInt(orderData.idMetodoPago),
                 direccionId: parseInt(orderData.idDireccion),
                 notasCliente: orderData.notasCliente || ''
             };
 
-            console.log('📤 Enviando request body:', requestBody);
+            console.log('📤 Enviando request body:', backendData);
 
-            const response = await apiClient.post(`/api/usuarios/${userId}/pedidos`, requestBody);
+            const response = await fetch(`${API_BASE_URL}/api/usuarios/${userId}/pedidos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(backendData)
+            });
 
-            console.log('✅ Respuesta del servidor:', response);
+            const data = await response.json();
 
-            return { success: true, data: response };
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al crear el pedido');
+            }
+
+            console.log('✅ Pedido creado exitosamente:', data);
+            return { success: true, data: data };
+
         } catch (error) {
             console.error('❌ Error en createOrder:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: error.message || 'Error de conexión' };
         }
-    }
+    },
 
     async getUserOrders(userId) {
         try {
+            // Intentar obtener ID si no viene como parámetro
             if (!userId) {
                 const userDataString = localStorage.getItem('userData') || localStorage.getItem('usuario');
                 const userData = userDataString ? JSON.parse(userDataString) : null;
@@ -46,104 +62,103 @@ class OrderService {
             }
 
             if (!userId) {
-                throw new Error("Usuario no identificado");
+                return { success: false, error: "Usuario no identificado" };
             }
 
             console.log('📦 Obteniendo pedidos para usuario:', userId);
 
-            const response = await apiClient.get(`/api/usuarios/${userId}/pedidos`);
+            const response = await fetch(`${API_BASE_URL}/api/usuarios/${userId}/pedidos`);
+            
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
 
-            console.log('✅ Pedidos obtenidos:', response);
+            const rawData = await response.json();
+            console.log('✅ Pedidos obtenidos (raw):', rawData);
 
+            // Normalizar la respuesta (por si viene envuelta en { data: [...] } o es array directo)
             let ordersData = [];
-
-            if (response && response.data) {
-                if (Array.isArray(response.data)) {
-                    ordersData = response.data;
-                } else if (Array.isArray(response.data.data)) {
-                    ordersData = response.data.data;
-                }
-            } else if (Array.isArray(response)) {
-                ordersData = response;
+            if (Array.isArray(rawData)) {
+                ordersData = rawData;
+            } else if (rawData && Array.isArray(rawData.data)) {
+                ordersData = rawData.data;
+            } else if (rawData && rawData.data) {
+                // Caso raro donde data no es array pero existe
+                ordersData = [rawData.data]; 
             }
 
             return { success: true, data: ordersData };
+
         } catch (error) {
             console.error('❌ Error obteniendo órdenes del usuario:', error);
             return { success: false, error: error.message };
         }
-    }
+    },
 
     async getAllOrders() {
         try {
             console.log('📦 Obteniendo todos los pedidos (admin)');
-
-            const response = await apiClient.get('/api/pedidos');
-
-            console.log('✅ Todos los pedidos obtenidos:', response);
+            
+            const response = await fetch(`${API_BASE_URL}/api/pedidos`);
+            const rawData = await response.json();
 
             let ordersData = [];
-
-            if (response && response.data) {
-                if (Array.isArray(response.data)) {
-                    ordersData = response.data;
-                } else if (Array.isArray(response.data.data)) {
-                    ordersData = response.data.data;
-                }
-            } else if (Array.isArray(response)) {
-                ordersData = response;
+            if (Array.isArray(rawData)) {
+                ordersData = rawData;
+            } else if (rawData && Array.isArray(rawData.data)) {
+                ordersData = rawData.data;
             }
 
-            return { success: true, data: ordersData };
+            return { success: response.ok, data: ordersData };
+
         } catch (error) {
             console.error('❌ Error obteniendo todos los pedidos:', error);
             return { success: false, error: error.message };
         }
-    }
+    },
 
     async getOrderById(orderId) {
         try {
-            if (!orderId) {
-                throw new Error("ID de pedido no válido");
-            }
+            if (!orderId) throw new Error("ID de pedido no válido");
 
             console.log('📦 Obteniendo pedido ID:', orderId);
+            const response = await fetch(`${API_BASE_URL}/api/pedidos/${orderId}`);
+            const data = await response.json();
 
-            const response = await apiClient.get(`/api/pedidos/${orderId}`);
+            return { success: response.ok, data: data };
 
-            console.log('✅ Pedido obtenido:', response);
-
-            return { success: true, data: response.data || response };
         } catch (error) {
             console.error('❌ Error obteniendo pedido:', error);
             return { success: false, error: error.message };
         }
-    }
+    },
 
     async updateOrderStatus(orderId, newStatus) {
         try {
-            if (!orderId) {
-                throw new Error("ID de pedido no válido");
-            }
+            if (!orderId) throw new Error("ID de pedido no válido");
 
             console.log('✏️ Actualizando estado del pedido:', orderId, 'a', newStatus);
 
-            // ✅ CORRECCIÓN: Enviar como query parameter, no body
-            const response = await apiClient.patch(`/api/pedidos/${orderId}/estado?estado=${newStatus}`, {});
+            // Enviar como Query Parameter según tu lógica original
+            const response = await fetch(`${API_BASE_URL}/api/pedidos/${orderId}/estado?estado=${newStatus}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-            console.log('✅ Respuesta del servidor:', response);
+            const data = await response.json();
 
-            // Verificar si realmente fue exitoso
-            if (response && response.data && response.data.success === false) {
-                throw new Error(response.data.message || 'Error al actualizar estado');
+            // Verificar éxito lógico del backend
+            if (data && data.success === false) {
+                return { success: false, error: data.message };
             }
 
-            return { success: true, data: response };
+            return { success: response.ok, data: data };
+
         } catch (error) {
-            console.error('❌ Error actualizando estado del pedido:', error);
+            console.error('❌ Error actualizando estado:', error);
             return { success: false, error: error.message };
         }
     }
-}
+};
 
-export default new OrderService();
+export default orderService;

@@ -3,7 +3,8 @@ import productService from '../common/api/product-service.js';
 import cartService from '../common/api/cart-service.js';
 import authService from '../services/auth-service.js';
 
-const DEFAULT_IMAGE = '../images/productosmiel';
+// ✅ IMAGEN POR DEFECTO CORREGIDA (sin .jpg al final)
+const DEFAULT_IMAGE = '../images/productosmiel.jpg';
 
 function showNotification(message, type = 'success') {
     const existingNotification = document.querySelector('.cart-notification');
@@ -120,7 +121,6 @@ class ShoppingCart {
         }
     }
 
-    // ✅ CORREGIDO: Ahora usa productId
     async removeFromCart(productId) {
         try {
             const result = await cartService.removeFromCart(productId);
@@ -182,13 +182,16 @@ class ShoppingCart {
                             item.cantidadProducto || 
                             1;
 
+                        // ✅ USAR IMAGEN_URL DEL BACKEND
+                        const imagen = item.imagenUrl || item.imagen_url || item.imagen || DEFAULT_IMAGE;
+
                         if (item.nombre && item.precio) {
                             return {
                                 cartItemId: detalleId,
                                 productId: prodId,
                                 name: item.nombre,
                                 price: parseFloat(item.precio),
-                                image: item.imagen || item.imagen_base64 || DEFAULT_IMAGE,
+                                image: imagen,
                                 quantity: cantidad
                             };
                         }
@@ -210,7 +213,7 @@ class ShoppingCart {
                             productId: prodId,
                             name: productData.nombre || 'Producto',
                             price: parseFloat(productData.precio || 0),
-                            image: productData.imagen_base64 || productData.imagen || DEFAULT_IMAGE,
+                            image: productData.imagenUrl || productData.imagen_url || DEFAULT_IMAGE,
                             quantity: cantidad
                         };
                     })
@@ -241,7 +244,10 @@ class ShoppingCart {
         } else {
             this.cartItemsContainer.innerHTML = this.items.map(item => `
                 <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <img src="${item.image}" 
+                         alt="${item.name}" 
+                         class="cart-item-image"
+                         onerror="this.src='${DEFAULT_IMAGE}'">
                     <div class="cart-item-info">
                         <h4 class="cart-item-name">${item.name}</h4>
                         <p class="cart-item-price">$${item.price.toFixed(2)}</p>
@@ -268,7 +274,6 @@ class ShoppingCart {
                 const isPlus = e.target.classList.contains('plus');
 
                 if (!isPlus && qty <= 1) {
-                    // ✅ CORREGIDO: Usa productId directamente
                     if (confirm('¿Eliminar este producto del carrito?')) {
                         this.removeFromCart(id);
                     }
@@ -280,7 +285,6 @@ class ShoppingCart {
 
         this.cartItemsContainer.querySelectorAll('.cart-item-remove').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // ✅ CORREGIDO: Usa productId en lugar de cartId
                 const id = parseInt(e.target.dataset.productId);
                 if (confirm('¿Eliminar este producto del carrito?')) {
                     this.removeFromCart(id);
@@ -347,8 +351,9 @@ async function loadAllProducts() {
                 console.log('🎯 Renderizando', products.length, 'productos...');
 
                 productsGrid.innerHTML = products.map(product => {
-                    const id = product.idProducto || product.id_producto || product.ID_Producto || product.id;
-                    const imgSrc = product.imagen || product.imagen_base64 || DEFAULT_IMAGE;
+                    // ✅ USAR ID Y IMAGEN_URL CORRECTAMENTE
+                    const id = product.id || product.idProducto || product.id_producto || product.ID_Producto;
+                    const imgSrc = product.imagenUrl || product.imagen_url || product.imagen || DEFAULT_IMAGE;
                     const nombre = product.nombre || 'Producto sin nombre';
                     const precio = product.precio || 0;
 
@@ -360,7 +365,9 @@ async function loadAllProducts() {
                     return `
                         <div class="product-card">
                             <div class="product-image">
-                                <img src="${imgSrc}" alt="${nombre}">
+                                <img src="${imgSrc}" 
+                                     alt="${nombre}"
+                                     onerror="this.src='${DEFAULT_IMAGE}'">
                             </div>
                             <h3 class="product-name">${nombre}</h3>
                             <p class="product-price">$${Number(precio).toFixed(2)}</p>

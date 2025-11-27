@@ -4,7 +4,8 @@ import cartService from '../common/api/cart-service.js';
 import authService from '../services/auth-service.js';
 import reviewService from '../common/api/review-service.js';
 
-const DEFAULT_IMAGE = '../images/productosmiel';
+// ✅ IMAGEN POR DEFECTO CORREGIDA
+const DEFAULT_IMAGE = './images/productosmiel.jpg';
 
 function showNotification(message, type = 'success') {
     const existingNotification = document.querySelector('.cart-notification');
@@ -105,7 +106,6 @@ class ShoppingCart {
         }
     }
 
-    // ✅ CORREGIDO: Ahora usa productId
     async removeFromCart(productId) {
         try {
             const result = await cartService.removeFromCart(productId);
@@ -163,7 +163,8 @@ class ShoppingCart {
                         console.log(`🔍 Procesando item - Producto ID: ${prodId}, Detalle ID: ${detalleId}, Cantidad: ${cantidad}`);
 
                         let productData = {};
-                        let imgSrc = DEFAULT_IMAGE;
+                        // ✅ USAR IMAGEN_URL DEL BACKEND
+                        let imgSrc = item.imagenUrl || item.imagen_url || item.imagen || DEFAULT_IMAGE;
                         
                         if (prodId) {
                             try {
@@ -172,7 +173,8 @@ class ShoppingCart {
                                 
                                 if (productResult.success && productResult.data) {
                                     productData = productResult.data;
-                                    imgSrc = productData.imagen_base64 || productData.imagen || DEFAULT_IMAGE;
+                                    // ✅ PRIORIZAR IMAGEN_URL
+                                    imgSrc = productData.imagenUrl || productData.imagen_url || productData.imagen || DEFAULT_IMAGE;
                                 }
                             } catch (error) {
                                 console.error(`❌ Error obteniendo producto ${prodId}:`, error);
@@ -228,7 +230,10 @@ class ShoppingCart {
                 
                 return `
                     <div class="cart-item">
-                        <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='${DEFAULT_IMAGE}'">
+                        <img src="${item.image}" 
+                             alt="${item.name}" 
+                             class="cart-item-image" 
+                             onerror="this.src='${DEFAULT_IMAGE}'">
                         <div class="cart-item-info">
                             <h4 class="cart-item-name">${item.name}</h4>
                             <p class="cart-item-price">$${item.price.toFixed(2)}</p>
@@ -257,7 +262,6 @@ class ShoppingCart {
                 const isPlus = e.target.classList.contains('plus');
 
                 if (!isPlus && qty <= 1) {
-                    // ✅ CORREGIDO: Usa productId directamente
                     if (confirm('¿Eliminar?')) this.removeFromCart(id);
                 } else {
                     this.updateQuantity(id, isPlus ? qty + 1 : qty - 1);
@@ -267,7 +271,6 @@ class ShoppingCart {
 
         this.cartItemsContainer.querySelectorAll('.cart-item-remove').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // ✅ CORREGIDO: Usa productId en lugar de cartId
                 const id = parseInt(e.target.dataset.productId);
                 if (confirm('¿Eliminar?')) this.removeFromCart(id);
             });
@@ -290,7 +293,7 @@ class ShoppingCart {
 
     proceedToCheckout() {
         if (this.items.length > 0) {
-            window.location.href = '../html/checkout.html';
+            window.location.href = './html/checkout.html';
         } else {
             alert('Tu carrito está vacío');
         }
@@ -318,15 +321,18 @@ async function loadAllProducts() {
                 const limitedProducts = products.slice(0, 3);
 
                 productsGrid.innerHTML = limitedProducts.map(product => {
-                    const id = product.idProducto || product.id_producto || product.ID_Producto || product.id;
-                    const imgSrc = product.imagen || product.imagen_base64 || DEFAULT_IMAGE;
+                    // ✅ USAR ID Y IMAGEN_URL CORRECTAMENTE
+                    const id = product.id || product.idProducto || product.id_producto || product.ID_Producto;
+                    const imgSrc = product.imagenUrl || product.imagen_url || product.imagen || DEFAULT_IMAGE;
 
                     if (!id) console.error("Index: Producto sin ID:", product);
 
                     return `
                         <div class="product-card">
                             <div class="product-image">
-                                <img src="${imgSrc}" alt="${product.nombre}" onerror="this.src='${DEFAULT_IMAGE}'">
+                                <img src="${imgSrc}" 
+                                     alt="${product.nombre}" 
+                                     onerror="this.src='${DEFAULT_IMAGE}'">
                             </div>
                             <h3 class="product-name">${product.nombre}</h3>
                             <p class="product-price">$${Number(product.precio).toFixed(2)}</p>
@@ -368,84 +374,230 @@ async function loadReviews() {
     const reviewsGrid = document.querySelector('.reviews-grid');
     if (!reviewsGrid) return;
 
+    console.log('📝 Cargando reseñas para la página principal...');
+
+    // Obtener productos para las reseñas
     let products = [];
     try {
         const result = await productService.getAllProducts();
         if (result.success && result.data.length > 0) {
-            products = result.data.slice(0, 3);
+            products = result.data.slice(0, 3); // Primeros 3 productos
         }
     } catch (error) {
         console.error('Error obteniendo productos para reseñas:', error);
     }
 
+    // Recolectar todas las reseñas
     let allReviews = [];
     for (const product of products) {
-        const productId = product.idProducto || product.id_producto || product.ID_Producto || product.id;
+        const productId = product.id || product.idProducto || product.id_producto || product.ID_Producto;
         try {
             const res = await reviewService.getProductReviews(productId);
             let reviewsArr = [];
+            
             if (Array.isArray(res)) {
                 reviewsArr = res;
             } else if (res && Array.isArray(res.data)) {
                 reviewsArr = res.data;
             }
-            reviewsArr.forEach(r => r.nombreProducto = product.nombre);
+
+            // Agregar nombre del producto a cada reseña
+            reviewsArr.forEach(r => {
+                r.nombreProducto = product.nombre;
+                r.productoId = productId;
+            });
+            
             allReviews.push(...reviewsArr);
         } catch (error) {
             console.warn('Error obteniendo reseñas del producto', productId, error);
         }
     }
 
+    console.log('📋 Total de reseñas encontradas:', allReviews.length);
+
+    // Limitar a las 10 más recientes
     const limitedReviews = allReviews.slice(0, 10);
+
     if (limitedReviews.length === 0) {
-        reviewsGrid.innerHTML = '<p class="empty-msg">No hay reseñas disponibles.</p>';
+        reviewsGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📝</div>
+                <h3 style="color: #666; margin-bottom: 10px;">No hay reseñas disponibles</h3>
+                <p style="color: #999; font-size: 14px;">Sé el primero en dejar una reseña</p>
+            </div>
+        `;
         return;
     }
 
-    function formatDate(fecha) {
-        if (!fecha) return '';
+    // ✅ Cargar información de usuarios para cada reseña
+    const reviewsWithUserData = await Promise.all(
+        limitedReviews.map(async (review) => {
+            // Extraer ID de usuario del review
+            const userId = review.usuario_id || review.usuarioId || review.id_usuario || review.ID_Usuario;
+            
+            console.log(`👤 Obteniendo datos del usuario ${userId}...`);
+            
+            let userName = `Usuario #${userId || 'Anónimo'}`;
+            let userImage = './images/perfil.png';
+
+            if (userId) {
+                try {
+                    // ✅ Obtener datos del usuario desde el backend
+                    const userResponse = await fetch(`http://54.152.16.222:7000/api/usuarios/${userId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (userResponse.ok) {
+                        const userResult = await userResponse.json();
+                        console.log(`✅ Respuesta del backend para usuario ${userId}:`, userResult);
+                        
+                        // El backend devuelve { success: true, data: { ... } }
+                        if (userResult.success && userResult.data) {
+                            const userData = userResult.data;
+                            
+                            // Extraer nombre del usuario
+                            userName = userData.nombreCompleto || 
+                                      userData.nombre_completo || 
+                                      userData.nombre || 
+                                      `Usuario #${userId}`;
+                            
+                            console.log(`✅ Nombre extraído: ${userName}`);
+                        }
+                    } else {
+                        console.warn(`⚠️ Error HTTP ${userResponse.status} al obtener usuario ${userId}`);
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Error obteniendo datos del usuario ${userId}:`, error);
+                    // Mantener nombre por defecto
+                }
+            }
+
+            return {
+                ...review,
+                nombreUsuario: userName,
+                imagenUsuario: userImage
+            };
+        })
+    );
+
+    console.log('✅ Reseñas con datos de usuario:', reviewsWithUserData);
+
+    // Renderizar reseñas con nombres reales
+    reviewsGrid.innerHTML = reviewsWithUserData.map(review => {
+        const nombreUsuario = review.nombreUsuario || 'Usuario Anónimo';
+        const imagenUsuario = review.imagenUsuario || './images/perfil.png';
+        const comentario = review.comentario || review.Comentario || 'Sin comentario';
+        const calificacion = review.calificacion || review.Calificacion || 0;
+        const fecha = review.fecha_creacion || review.Fecha || review.fechaCreacion;
+        const nombreProducto = review.nombreProducto || 'Producto';
+
+        const formattedDate = formatDate(fecha);
+        const stars = generateStars(calificacion);
+
+        return `
+            <div class="review-card" style="position: relative; overflow: hidden; transition: all 0.3s ease;">
+                <!-- Decoración de fondo -->
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: #F9BD3115; border-radius: 50%; z-index: 0;"></div>
+                
+                <div class="review-header" style="position: relative; z-index: 1;">
+                    <div class="review-avatar">
+                        <img src="${imagenUsuario}" 
+                             alt="${nombreUsuario}" 
+                             class="review-avatar"
+                             onerror="this.src='./images/perfil.png'"
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #F9BD31; background: #f5f5f5;">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name" style="margin: 0 0 8px 0; color: #333; font-weight: bold; font-size: 1.05em;">
+                            ${nombreUsuario}
+                        </h4>
+                        
+                        <!-- Estrellas de calificación -->
+                        <div style="color: #F9BD31; font-size: 18px; letter-spacing: 2px; margin-bottom: 10px;">
+                            ${stars}
+                        </div>
+                        
+                        <!-- Comentario -->
+                        <p class="review-text" style="margin: 0; color: #666; line-height: 1.6; font-size: 0.95em;">
+                            "${comentario}"
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="review-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e0e0e0; display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.85em;">
+                    <span class="review-label" style="background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); padding: 6px 12px; border-radius: 8px; color: #555; font-weight: 500;">
+                        📦 ${nombreProducto}
+                    </span>
+                    
+                    ${formattedDate ? `
+                        <span class="review-label" style="background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); padding: 6px 12px; border-radius: 8px; color: #555; font-weight: 500;">
+                            📅 ${formattedDate}
+                        </span>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Agregar hover effect a las cards
+    document.querySelectorAll('.review-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+            this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+
+    console.log('✅ Reseñas renderizadas con nombres reales de usuario en el DOM');
+}
+
+function generateStars(rating) {
+    const fullStars = '★'.repeat(Math.max(0, Math.min(5, rating)));
+    const emptyStars = '☆'.repeat(Math.max(0, 5 - rating));
+    return fullStars + emptyStars;
+}
+
+function formatDate(fecha) {
+    if (!fecha) return '';
+    
+    try {
+        let date;
+
         if (typeof fecha === 'number') {
-            const d = new Date(fecha * 1000);
-            return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-        if (typeof fecha === 'string') {
+            date = new Date(fecha);
+        } else if (typeof fecha === 'string') {
             const parts = fecha.split(' ');
             if (parts.length === 2) {
                 const [datePart, timePart] = parts;
                 const [year, month, day] = datePart.split('-');
                 const [hour, min, sec] = timePart.split(':');
-                const d = new Date(year, month - 1, day, hour, min, sec);
-                return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+                date = new Date(year, month - 1, day, hour, min, sec);
+            } else {
+                date = new Date(fecha);
             }
+        } else if (fecha instanceof Date) {
+            date = fecha;
         }
-        return fecha;
-    }
 
-    reviewsGrid.innerHTML = limitedReviews.map(review => {
-        const nombre = `Usuario #${review.idUsuario || ''}`;
-        const comentario = review.comentario || '';
-        const calificacion = review.calificacion || '';
-        const fecha = formatDate(review.fecha);
-        const producto = review.nombreProducto || review.idProducto || '';
-        return `
-        <div class="review-card">
-            <div class="review-header">
-                <div class="review-avatar">
-                    <img src="./images/perfil.png" alt="" class="review-avatar">
-                </div>
-                <div class="review-info">
-                    <h4 class="review-name">${nombre}</h4>
-                    <p class="review-text">${comentario}</p>
-                </div>
-            </div>
-            <div class="review-footer">
-                <span class="review-label">${calificacion ? `Calificación: ${calificacion}/5` : ''}</span>
-                <span class="review-label">${producto ? `Producto: ${producto}` : ''}</span>
-                <span class="review-label">${fecha ? `Fecha: ${fecha}` : ''}</span>
-            </div>
-        </div>
-        `;
-    }).join('');
+        if (!date || isNaN(date.getTime())) {
+            return '';
+        }
+
+        return date.toLocaleDateString('es-MX', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    } catch (error) {
+        console.error('Error formateando fecha:', error);
+        return '';
+    }
 }
 
 class UserSidebar {
