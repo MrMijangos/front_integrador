@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAddCard.disabled = true;
 
         try {
-            console.log("📤 Enviando datos al servidor...");
+            console.log("Enviando datos al servidor...");
 
             const result = await paymentService.addPaymentMethod({
                 idUsuario: authService.getUserId(),
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tipo: cardType
             });
 
-            console.log('📥 Respuesta del servidor:', result);
+            console.log(' Respuesta del servidor:', result);
 
             if (result.success) {
                 showNotification('Tarjeta guardada exitosamente', 'success');
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.error || 'Error desconocido del servidor');
             }
         } catch (error) {
-            console.error('❌ Error:', error);
+            console.error(' Error:', error);
             showNotification(error.message || 'Error de conexión con el servidor', 'error');
             btnAddCard.textContent = originalText;
             btnAddCard.disabled = false;
@@ -149,18 +149,18 @@ function setupCardFormatting() {
 
 function validateCardNumber(cardNumber) {
     if (!/^\d{13,19}$/.test(cardNumber)) {
-        console.log('❌ Tarjeta rechazada por longitud:', cardNumber.length, 'dígitos');
+        console.log(' Tarjeta rechazada por longitud:', cardNumber.length, 'dígitos');
         return false;
     }
 
-    console.log('✅ Tarjeta aceptada:', cardNumber.length, 'dígitos');
+    console.log(' Tarjeta aceptada:', cardNumber.length, 'dígitos');
     return true;
 }
 
 function validateExpiration(expiration) {
     const match = expiration.match(/^(\d{2})\/(\d{2})$/);
     if (!match) {
-        console.log('❌ Formato de fecha inválido');
+        console.log(' Formato de fecha inválido');
         return false;
     }
 
@@ -168,7 +168,7 @@ function validateExpiration(expiration) {
     const year = parseInt('20' + match[2]);
 
     if (month < 1 || month > 12) {
-        console.log('❌ Mes inválido:', month);
+        console.log(' Mes inválido:', month);
         return false;
     }
 
@@ -177,11 +177,11 @@ function validateExpiration(expiration) {
     const currentMonth = now.getMonth() + 1;
 
     if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        console.log('❌ Tarjeta vencida');
+        console.log(' Tarjeta vencida');
         return false;
     }
 
-    console.log('✅ Fecha válida');
+    console.log(' Fecha válida');
     return true;
 }
 

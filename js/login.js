@@ -43,25 +43,24 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (result.success) {
-                // 🔍 LOGS DE DEBUG
-                console.log('🔍 DEBUG - Resultado completo:', result);
-                console.log('🔍 DEBUG - Datos del usuario:', result.data);
-                console.log('🔍 DEBUG - rolId:', result.data.rolId);
-                console.log('🔍 DEBUG - rol_id:', result.data.rol_id);
-                console.log('🔍 DEBUG - Todas las keys:', Object.keys(result.data));
+                console.log(' DEBUG - Resultado completo:', result);
+                console.log(' DEBUG - Datos del usuario:', result.data);
+                console.log(' DEBUG - rolId:', result.data.rolId);
+                console.log(' DEBUG - rol_id:', result.data.rol_id);
+                console.log(' DEBUG - Todas las keys:', Object.keys(result.data));
                 
                 showNotification('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
                 loginForm.reset();
                 
                 setTimeout(() => {
                     const rol = result.data.rolId || result.data.rol_id || result.data.ID_Rol || result.data.rol;
-                    console.log('🎯 Rol final detectado:', rol, '(tipo:', typeof rol, ')');
+                    console.log(' Rol final detectado:', rol, '(tipo:', typeof rol, ')');
                     
                     if (rol === 1 || rol === '1') {
-                        console.log('➡️ Redirigiendo a ADMIN');
+                        console.log(' Redirigiendo a ADMIN');
                         window.location.href = '../html/admin-products.html';
                     } else {
-                        console.log('➡️ Redirigiendo a INDEX (usuario normal)');
+                        console.log(' Redirigiendo a INDEX (usuario normal)');
                         window.location.href = '../index.html';
                     }
                 }, 1500);

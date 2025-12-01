@@ -20,13 +20,13 @@ async function loadMyReviews() {
     try {
         const result = await reviewService.getMyReviews();
 
-        console.log('📋 Resultado de getMyReviews:', result);
+        console.log(' Resultado de getMyReviews:', result);
 
         container.innerHTML = '';
 
         if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             result.data.forEach((review) => {
-                console.log('💬 Procesando reseña:', review);
+                console.log(' Procesando reseña:', review);
                 const card = createReviewCard(review);
                 container.appendChild(card);
             });
@@ -58,7 +58,6 @@ async function loadMyReviews() {
 }
 
 function createReviewCard(review) {
-    // ✅ CORRECCIÓN: Mapear correctamente los campos del backend
     const reviewId = review.id || review.ID_Resena || review.idResena;
     const calificacion = review.calificacion || review.Calificacion || 0;
     const comentario = review.comentario || review.Comentario || '';
@@ -152,7 +151,6 @@ function createReviewCard(review) {
         </div>
     `;
 
-    // Hover effect para toda la tarjeta
     div.addEventListener('mouseenter', () => {
         div.style.borderColor = '#F9BD31';
         div.style.boxShadow = '0 6px 20px rgba(249, 189, 49, 0.3)';
@@ -165,7 +163,6 @@ function createReviewCard(review) {
         div.style.transform = 'translateY(0)';
     });
 
-    // Evento del botón eliminar
     const deleteBtn = div.querySelector('.btn-delete-review');
     deleteBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -213,13 +210,10 @@ function formatDate(dateValue) {
     try {
         let date;
 
-        // Si es timestamp en milisegundos
         if (typeof dateValue === 'number') {
             date = new Date(dateValue);
         }
-        // Si es string en formato "YYYY-MM-DD HH:MM:SS"
         else if (typeof dateValue === 'string') {
-            // Intentar parsearlo como timestamp primero
             const timestamp = parseInt(dateValue);
             if (!isNaN(timestamp)) {
                 date = new Date(timestamp);
@@ -227,12 +221,10 @@ function formatDate(dateValue) {
                 date = new Date(dateValue.replace(' ', 'T'));
             }
         }
-        // Si ya es un objeto Date
         else if (dateValue instanceof Date) {
             date = dateValue;
         }
 
-        // Validar que la fecha sea válida
         if (!date || isNaN(date.getTime())) {
             return 'Fecha inválida';
         }

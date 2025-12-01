@@ -2,7 +2,6 @@ import orderService from '../common/api/order-service.js';
 import authService from '../services/auth-service.js';
 import cartService from '../common/api/cart-service.js';
 
-// const API_BASE_URL...  <-- ELIMINADO: Ya no se usa aquí, el service se encarga
 const DEFAULT_IMAGE = '../images/productosmiel';
 
 window.toggleOrderMenu = function (button) {
@@ -57,7 +56,7 @@ function getStatusClass(estado) {
         'ENTREGADO': 'delivered',
         'DELIVERED': 'delivered',
         'COMPLETADA': 'delivered',
-        'CANCELADO': 'cancelled' // Agregué clase para cancelado
+        'CANCELADO': 'cancelled' 
     };
     return statusMap[estado?.toUpperCase()] || 'in-process';
 }
@@ -95,7 +94,6 @@ async function loadUserOrders() {
     ordersList.innerHTML = '<p style="text-align:center; padding:40px;">Cargando pedidos...</p>';
 
     try {
-        // 🔹 USO DEL SERVICE AQUÍ
         const result = await orderService.getUserOrders(userId);
 
         if (!result.success) {
@@ -103,7 +101,7 @@ async function loadUserOrders() {
         }
 
         const orders = result.data;
-        console.log('📦 Pedidos listos para renderizar:', orders);
+        console.log(' Pedidos listos para renderizar:', orders);
 
         if (!orders || orders.length === 0) {
             ordersList.innerHTML = `
@@ -122,7 +120,6 @@ async function loadUserOrders() {
             const statusClass = getStatusClass(order.estado);
             const statusText = getStatusText(order.estado);
             
-            // Solo se puede cancelar si está en proceso
             const canCancel = (statusClass === 'in-process') && (order.estado !== 'CANCELADO');
 
             return `
@@ -185,7 +182,6 @@ async function loadUserOrders() {
 
 window.repurchaseOrder = async function (orderId) {
     showNotification('Función de recompra en desarrollo...', 'info');
-    // Aquí podrías llamar a orderService.getOrderById(orderId) y luego agregar al carrito
 }
 
 
@@ -195,7 +191,6 @@ window.cancelOrder = async function (orderId) {
     }
 
     try {
-        // 🔹 USO DEL SERVICE AQUÍ
         const result = await orderService.updateOrderStatus(orderId, 'CANCELADO');
 
         if (!result.success) {
@@ -204,7 +199,6 @@ window.cancelOrder = async function (orderId) {
 
         showNotification('Pedido cancelado exitosamente', 'success');
         
-        // Recargar la lista para ver el cambio de estado
         await loadUserOrders();
 
     } catch (error) {
@@ -214,10 +208,9 @@ window.cancelOrder = async function (orderId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 orders.js cargado');
+    console.log(' orders.js cargado');
 
     if (!authService.isAuthenticated()) {
-        // No usamos alert porque bloquea el render, mejor redirigir directo
         console.warn('Usuario no autenticado, redirigiendo...');
         window.location.href = '../html/login.html';
         return;

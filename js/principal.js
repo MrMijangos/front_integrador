@@ -554,7 +554,7 @@ async function loadReviews() {
         });
     });
 
-    console.log('✅ Reseñas renderizadas con nombres reales de usuario en el DOM');
+    console.log(' Reseñas renderizadas con nombres reales de usuario en el DOM');
 }
 
 function generateStars(rating) {

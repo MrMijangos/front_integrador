@@ -2,7 +2,7 @@ import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("✅ Script add-shipping.js cargado");
+    console.log(" Script add-shipping.js cargado");
 
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
@@ -41,7 +41,7 @@ async function handleSaveAddress(e) {
     const phone = document.getElementById('shippingPhone').value.trim();
     const references = document.getElementById('shippingReferences').value.trim();
 
-    console.log('📋 Datos capturados:', {
+    console.log(' Datos capturados:', {
         name, street, numExt, numInt, colony, city, state, zip, phone, references
     });
 
@@ -50,7 +50,7 @@ async function handleSaveAddress(e) {
     btnAdd.disabled = true;
 
     try {
-        console.log("📤 Enviando datos al servidor...");
+        console.log(" Enviando datos al servidor...");
 
         const result = await shippingService.addShippingMethod({
             idUsuario: authService.getUserId(),
@@ -66,7 +66,7 @@ async function handleSaveAddress(e) {
             referencias: references || ''
         });
 
-        console.log('📥 Respuesta del servidor:', result);
+        console.log(' Respuesta del servidor:', result);
 
         if (result.success) {
             showNotification('Dirección guardada exitosamente', 'success');
@@ -89,7 +89,7 @@ async function handleSaveAddress(e) {
         }
 
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error(' Error:', error);
         showNotification(error.message, 'error');
         btnAdd.textContent = originalText;
         btnAdd.disabled = false;

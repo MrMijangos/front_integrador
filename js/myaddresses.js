@@ -23,27 +23,22 @@ async function loadAddresses() {
         const result = await shippingService.getAllShipments();
         console.log('🔍 RESPUESTA COMPLETA de direcciones:', JSON.stringify(result, null, 2));
         
-        // ✅ CORRECCIÓN: Normalizar la respuesta correctamente
         let direcciones = [];
         
-        // Si result.success existe y result.data es un array
         if (result.success && Array.isArray(result.data)) {
             direcciones = result.data;
         }
-        // Si result.data.data existe (doble envoltorio)
         else if (result.data && Array.isArray(result.data.data)) {
             direcciones = result.data.data;
         }
-        // Si result.data es un objeto con success
         else if (result.data && result.data.success && Array.isArray(result.data.data)) {
             direcciones = result.data.data;
         }
-        // Si viene directo como array
         else if (Array.isArray(result)) {
             direcciones = result;
         }
 
-        console.log('📦 Array normalizado:', direcciones);
+        console.log(' Array normalizado:', direcciones);
         
         container.innerHTML = '';
         
@@ -60,7 +55,7 @@ async function loadAddresses() {
         }
         
     } catch (error) {
-        console.error("❌ Error al cargar direcciones:", error);
+        console.error(" Error al cargar direcciones:", error);
         container.innerHTML = `<p style="color:red; text-align:center;">Error al cargar direcciones: ${error.message}</p>`;
     } finally {
         const btnAdd = document.createElement('button');
@@ -76,7 +71,6 @@ async function loadAddresses() {
 }
 
 function createAddressCard(addr) {
-    // ✅ CORRECCIÓN: Buscar el ID en múltiples propiedades posibles
     const idReal = addr.ID_Direccion || 
                    addr.idDireccion || 
                    addr.id_direccion || 
@@ -84,7 +78,7 @@ function createAddressCard(addr) {
                    addr.id || 
                    addr.ID;
     
-    console.log('🔑 ID detectado:', idReal, 'de objeto:', addr);
+    console.log(' ID detectado:', idReal, 'de objeto:', addr);
     
     const div = document.createElement('div');
     div.className = 'address-card';

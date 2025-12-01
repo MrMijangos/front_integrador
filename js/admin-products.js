@@ -3,31 +3,31 @@ import authService from '../services/auth-service.js';
 
 let currentProductId = null;
 const API_BASE_URL = `${environment.apiUrl}/api`;
-const DEFAULT_IMAGE = '../images/productosmiel.jpg'; // ✅ IMAGEN POR DEFECTO CORREGIDA
+const DEFAULT_IMAGE = '../images/productosmiel.jpg'; 
 
 const productService = {
     async getAllProducts() {
         try {
-            console.log('📡 Solicitando productos a:', `${API_BASE_URL}/productos`);
+            console.log('Solicitando productos a:', `${API_BASE_URL}/productos`);
             const response = await fetch(`${API_BASE_URL}/productos`);
             const data = await response.json();
-            console.log('📦 Productos recibidos:', data);
+            console.log(' Productos recibidos:', data);
             return { success: response.ok, data };
         } catch (error) {
-            console.error('❌ Error cargando productos:', error);
+            console.error(' Error cargando productos:', error);
             return { success: false, error: 'Error de conexión' };
         }
     },
 
     async getProductById(id) {
         try {
-            console.log('🔍 Obteniendo producto ID:', id);
+            console.log(' Obteniendo producto ID:', id);
             const response = await fetch(`${API_BASE_URL}/productos/${id}`);
             const data = await response.json();
-            console.log('📦 Producto obtenido:', data);
+            console.log(' Producto obtenido:', data);
             return { success: response.ok, data };
         } catch (error) {
-            console.error('❌ Error obteniendo producto:', error);
+            console.error(' Error obteniendo producto:', error);
             return { success: false, error: 'Error de conexión' };
         }
     },
@@ -39,20 +39,20 @@ const productService = {
                 descripcion: productData.descripcion,
                 precio: productData.precio,
                 stock: productData.cantidad,
-                imagenUrl: productData.imagen  // ✅ Backend espera imagenUrl
+                imagenUrl: productData.imagen  
             };
 
-            console.log('➕ Creando producto:', backendData);
+            console.log(' Creando producto:', backendData);
             const response = await fetch(`${API_BASE_URL}/productos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(backendData)
             });
             const data = await response.json();
-            console.log('✅ Producto creado:', data);
+            console.log(' Producto creado:', data);
             return { success: response.ok, data };
         } catch (error) {
-            console.error('❌ Error creando producto:', error);
+            console.error(' Error creando producto:', error);
             return { success: false, error: 'Error de conexión' };
         }
     },
@@ -64,10 +64,10 @@ const productService = {
                 descripcion: productData.descripcion,
                 precio: productData.precio,
                 stock: productData.cantidad,
-                imagenUrl: productData.imagen  // ✅ Backend espera imagenUrl
+                imagenUrl: productData.imagen  
             };
 
-            console.log('✏️ Actualizando producto ID:', id, backendData);
+            console.log(' Actualizando producto ID:', id, backendData);
             const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -75,36 +75,36 @@ const productService = {
             });
 
             if (response.status === 204) {
-                console.log('✅ Producto actualizado (204)');
+                console.log(' Producto actualizado (204)');
                 return { success: true };
             }
 
             const data = await response.json();
-            console.log('✅ Producto actualizado:', data);
+            console.log(' Producto actualizado:', data);
             return { success: response.ok, data };
         } catch (error) {
-            console.error('❌ Error actualizando producto:', error);
+            console.error(' Error actualizando producto:', error);
             return { success: false, error: 'Error de conexión' };
         }
     },
 
     async deleteProduct(id) {
         try {
-            console.log('🗑️ Eliminando producto ID:', id);
+            console.log(' Eliminando producto ID:', id);
             const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
                 method: 'DELETE'
             });
 
             if (response.status === 204) {
-                console.log('✅ Producto eliminado (204)');
+                console.log(' Producto eliminado (204)');
                 return { success: true };
             }
 
             const data = await response.json();
-            console.log('✅ Producto eliminado:', data);
+            console.log(' Producto eliminado:', data);
             return { success: response.ok, data };
         } catch (error) {
-            console.error('❌ Error eliminando producto:', error);
+            console.error(' Error eliminando producto:', error);
             return { success: false, error: 'Error de conexión' };
         }
     }
@@ -113,7 +113,7 @@ const productService = {
 async function loadProducts() {
     const productsGrid = document.querySelector('.products-grid');
     if (!productsGrid) {
-        console.error('❌ No se encontró .products-grid');
+        console.error(' No se encontró .products-grid');
         return;
     }
 
@@ -125,11 +125,10 @@ async function loadProducts() {
         if (result.success && result.data) {
             let products = Array.isArray(result.data) ? result.data : [];
             
-            console.log('📦 Total productos:', products.length);
+            console.log(' Total productos:', products.length);
 
             if (products.length > 0) {
                 productsGrid.innerHTML = products.map(product => {
-                    // ✅ USAR ID Y IMAGEN_URL CORRECTAMENTE
                     const id = product.id || product.idProducto || product.ID_Producto || product.id_producto;
                     const imagen = product.imagenUrl || product.imagen_url || product.imagen || DEFAULT_IMAGE;
                     const stock = product.stock !== undefined ? product.stock : (product.Stock || 0);
@@ -152,22 +151,22 @@ async function loadProducts() {
                 document.querySelectorAll('.btn-edit-product').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         currentProductId = e.target.dataset.id;
-                        console.log('✏️ Editando producto ID:', currentProductId);
+                        console.log(' Editando producto ID:', currentProductId);
                         openEditModal(currentProductId);
                     });
                 });
                 
-                console.log('✅ Productos cargados correctamente');
+                console.log(' Productos cargados correctamente');
             } else {
                 productsGrid.innerHTML = '<p>No se encontraron productos en la base de datos.</p>';
-                console.log('⚠️ No hay productos para mostrar');
+                console.log(' No hay productos para mostrar');
             }
         } else {
             productsGrid.innerHTML = '<p>Error al obtener los datos de productos.</p>';
-            console.error('❌ Error en la respuesta:', result);
+            console.error(' Error en la respuesta:', result);
         }
     } catch (error) {
-        console.error('❌ Error crítico loading products:', error);
+        console.error(' Error crítico loading products:', error);
         productsGrid.innerHTML = '<p>Error crítico al cargar productos.</p>';
         showNotification('Error crítico al cargar productos', 'error');
     }
@@ -185,7 +184,6 @@ async function openEditModal(productId) {
 
         if (result.success && result.data) {
             const product = result.data;
-            // ✅ USAR IMAGEN_URL DEL BACKEND
             const imagenUrl = product.imagenUrl || product.imagen_url || product.imagen || '';
 
             document.getElementById('editProductName').value = product.nombre || '';
@@ -195,10 +193,10 @@ async function openEditModal(productId) {
             document.getElementById('editProductImageUrl').value = imagenUrl;
             document.getElementById('editStockCount').textContent = product.stock !== undefined ? product.stock : (product.Stock || '0');
 
-            console.log('✅ Modal de edición abierto con producto:', product);
+            console.log(' Modal de edición abierto con producto:', product);
         }
     } catch (error) {
-        console.error('❌ Error al cargar producto:', error);
+        console.error(' Error al cargar producto:', error);
         showNotification('Error al cargar detalles del producto', 'error');
         window.closeEditModal();
     }
@@ -216,7 +214,7 @@ window.closeAddModal = function () {
         const stockCount = document.getElementById('stockCount');
         if (stockCount) stockCount.textContent = '0';
 
-        console.log('🚪 Modal de agregar cerrado');
+        console.log(' Modal de agregar cerrado');
     }
 }
 
@@ -226,7 +224,7 @@ window.closeEditModal = function () {
         modal.classList.remove('active');
         document.body.style.overflow = '';
         currentProductId = null;
-        console.log('🚪 Modal de edición cerrado');
+        console.log(' Modal de edición cerrado');
     }
 }
 
@@ -247,13 +245,13 @@ window.deleteProduct = async function () {
             showNotification(result.error || 'Error al eliminar producto', 'error');
         }
     } catch (error) {
-        console.error('❌ Error al eliminar:', error);
+        console.error(' Error al eliminar:', error);
         showNotification('Error de conexión', 'error');
     }
 }
 
 window.openAddModal = function () {
-    console.log('🔘 Botón agregar producto clickeado - Abriendo modal');
+    console.log(' Botón agregar producto clickeado - Abriendo modal');
     const modal = document.getElementById('addProductModal');
     if (modal) {
         modal.classList.add('active');
@@ -265,9 +263,9 @@ window.openAddModal = function () {
         const stockCount = document.getElementById('stockCount');
         if (stockCount) stockCount.textContent = '0';
 
-        console.log('✅ Modal de agregar producto abierto correctamente');
+        console.log(' Modal de agregar producto abierto correctamente');
     } else {
-        console.error('❌ No se encontró el modal con id: addProductModal');
+        console.error(' No se encontró el modal con id: addProductModal');
     }
 }
 
@@ -282,7 +280,7 @@ async function handleAddProduct(e) {
         imagen: document.getElementById('addProductImageUrl').value
     };
 
-    console.log('📤 Datos del producto a crear:', productData);
+    console.log(' Datos del producto a crear:', productData);
 
     if (!productData.imagen) {
         showNotification('Por favor ingresa la URL de la imagen del producto', 'error');
@@ -303,7 +301,7 @@ async function handleAddProduct(e) {
             showNotification(result.error || 'Error al agregar producto', 'error');
         }
     } catch (error) {
-        console.error('❌ Error al agregar:', error);
+        console.error(' Error al agregar:', error);
         showNotification('Error de conexión', 'error');
     }
 }
@@ -319,7 +317,7 @@ async function handleEditProduct(e) {
         imagen: document.getElementById('editProductImageUrl').value
     };
 
-    console.log('📤 Datos del producto a actualizar:', productData);
+    console.log(' Datos del producto a actualizar:', productData);
     await updateProductInternal(productData);
 }
 
@@ -335,51 +333,51 @@ async function updateProductInternal(productData) {
             showNotification(result.error || 'Error al actualizar producto', 'error');
         }
     } catch (error) {
-        console.error('❌ Error al actualizar:', error);
+        console.error(' Error al actualizar:', error);
         showNotification('Error de conexión', 'error');
     }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('✅ admin-products.js cargado correctamente');
-    console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    console.log(' admin-products.js cargado correctamente');
+    console.log(' API_BASE_URL:', API_BASE_URL);
 
-    console.log('🔍 Verificando autenticación...');
+    console.log('Verificando autenticación...');
     const isAuth = authService.isAuthenticated();
-    console.log('🔍 ¿Está autenticado?', isAuth);
+    console.log(' ¿Está autenticado?', isAuth);
     
     if (!isAuth) {
-        console.log('❌ No autenticado - Redirigiendo a login');
+        console.log(' No autenticado - Redirigiendo a login');
         alert('Debes iniciar sesión como administrador');
         window.location.href = '../html/login.html';
         return;
     }
 
     const isAdmin = authService.isAdmin();
-    console.log('🔍 ¿Es admin?', isAdmin);
+    console.log(' ¿Es admin?', isAdmin);
     
     if (!isAdmin) {
-        console.log('❌ No es admin - Redirigiendo a index');
+        console.log(' No es admin - Redirigiendo a index');
         alert('No tienes permisos de administrador');
         window.location.href = '../index.html';
         return;
     }
 
-    console.log('✅ Usuario admin verificado - Cargando productos');
+    console.log(' Usuario admin verificado - Cargando productos');
     await loadProducts();
 
     const btnAdd = document.getElementById('btnAddProducts');
-    console.log('🔍 Buscando botón con ID: btnAddProducts');
-    console.log('🔍 Botón encontrado:', btnAdd);
+    console.log(' Buscando botón con ID: btnAddProducts');
+    console.log(' Botón encontrado:', btnAdd);
     
     if (btnAdd) {
-        console.log('✅ Agregando evento click al botón');
+        console.log(' Agregando evento click al botón');
         btnAdd.addEventListener('click', () => {
-            console.log('🔘 Click detectado en btnAddProducts');
+            console.log(' Click detectado en btnAddProducts');
             window.openAddModal();
         });
     } else {
-        console.error('❌ No se encontró el botón con ID: btnAddProducts');
+        console.error(' No se encontró el botón con ID: btnAddProducts');
     }
 
     setupEventListeners();
@@ -403,13 +401,13 @@ function setupEventListeners() {
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
         addForm.addEventListener('submit', handleAddProduct);
-        console.log('✅ Event listener agregado a addProductForm');
+        console.log(' Event listener agregado a addProductForm');
     }
 
     const editForm = document.getElementById('editProductForm');
     if (editForm) {
         editForm.addEventListener('submit', handleEditProduct);
-        console.log('✅ Event listener agregado a editProductForm');
+        console.log(' Event listener agregado a editProductForm');
     }
 }
 

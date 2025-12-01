@@ -49,16 +49,15 @@ async function loadPaymentMethods() {
     }
 
     try {
-        console.log('💳 Cargando métodos de pago...');
+        console.log(' Cargando métodos de pago...');
         const result = await paymentService.getAllPaymentMethods();
         
-        console.log('📦 Resultado de métodos de pago:', result);
+        console.log(' Resultado de métodos de pago:', result);
         
         container.innerHTML = '';
 
         let paymentsArr = [];
         
-        // ✅ Procesar la respuesta del backend
         if (result && result.success && result.data) {
             if (Array.isArray(result.data)) {
                 paymentsArr = result.data;
@@ -69,7 +68,7 @@ async function loadPaymentMethods() {
             paymentsArr = result;
         }
 
-        console.log('✅ Tarjetas procesadas:', paymentsArr);
+        console.log('Tarjetas procesadas:', paymentsArr);
 
         if (paymentsArr.length > 0) {
             paymentsArr.forEach((card, index) => {
@@ -86,7 +85,7 @@ async function loadPaymentMethods() {
         }
 
     } catch (error) {
-        console.error("❌ Error cargando tarjetas:", error);
+        console.error(" Error cargando tarjetas:", error);
         container.innerHTML = '<p style="color:red; text-align:center;">Error al cargar tarjetas</p>';
     }
 }
@@ -106,7 +105,6 @@ function createCardHTML(card, isFirst) {
         transition: all 0.3s ease;
     `;
     
-    // ✅ MAPEO CORRECTO DE CAMPOS DEL BACKEND
     const cardId = card.id || card.idMetodoPago || card.id_metodo_pago || card.ID_MetodoPago;
     const tipoTarjeta = card.tipoTarjeta || card.tipo_tarjeta || card.tipo || 'TARJETA';
     const nombreTitular = card.nombreTitular || card.nombre_titular || 'Titular';
@@ -117,7 +115,6 @@ function createCardHTML(card, isFirst) {
 
     const checkedAttr = (isFirst || esPredeterminado) ? 'checked' : '';
 
-    // ✅ Determinar el ícono de la tarjeta
     let cardIcon = '💳';
     const tipo = tipoTarjeta.toUpperCase();
     if (tipo.includes('VISA')) {
@@ -160,7 +157,6 @@ function createCardHTML(card, isFirst) {
         </div>
     `;
 
-    // ✅ Hover effect
     div.addEventListener('mouseenter', () => {
         div.style.borderColor = '#f9bd31';
         div.style.backgroundColor = '#fffbf0';
@@ -193,7 +189,7 @@ function handleProceed() {
     const idMetodoPago = selected.value;
     localStorage.setItem('selectedPaymentId', idMetodoPago);
     
-    console.log("✅ Método de pago guardado:", idMetodoPago);
+    console.log("Método de pago guardado:", idMetodoPago);
 
     window.location.href = '../html/shipping-address.html';
 }

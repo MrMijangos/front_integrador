@@ -6,7 +6,7 @@ class ReviewManager {
     constructor() {
         this.selectedRating = 0;
         this.selectedProduct = null;
-        this.myReviews = []; // ✅ Almacenar las reseñas del usuario
+        this.myReviews = []; 
         this.init();
     }
 
@@ -19,29 +19,26 @@ class ReviewManager {
             return;
         }
 
-        // ✅ Cargar las reseñas del usuario primero
         await this.loadMyReviews();
         
         await this.loadProducts();
         this.setupEventListeners();
     }
 
-    // ✅ NUEVA FUNCIÓN: Cargar las reseñas existentes del usuario
     async loadMyReviews() {
         try {
-            console.log('📋 Cargando mis reseñas existentes...');
+            console.log(' Cargando mis reseñas existentes...');
             const result = await reviewService.getMyReviews();
             
             if (result.success && result.data) {
                 this.myReviews = result.data;
-                console.log('✅ Reseñas del usuario:', this.myReviews);
+                console.log('Reseñas del usuario:', this.myReviews);
             }
         } catch (error) {
-            console.error('❌ Error cargando reseñas del usuario:', error);
+            console.error(' Error cargando reseñas del usuario:', error);
         }
     }
 
-    // ✅ NUEVA FUNCIÓN: Verificar si ya existe una reseña para este producto
     hasReviewForProduct(productId) {
         return this.myReviews.some(review => {
             const reviewProductId = review.productoId || 
@@ -77,9 +74,8 @@ class ReviewManager {
             option.textContent = `${product.nombre} - $${Number(product.precio).toFixed(2)}`;
             option.dataset.product = JSON.stringify(product);
             
-            // ✅ Marcar visualmente si ya tiene reseña
             if (this.hasReviewForProduct(id)) {
-                option.textContent += ' ⭐ (Ya reseñado)';
+                option.textContent += '  (Ya reseñado)';
                 option.style.color = '#999';
                 option.style.fontStyle = 'italic';
             }
@@ -123,7 +119,6 @@ class ReviewManager {
         if (selectedOption.value) {
             this.selectedProduct = JSON.parse(selectedOption.dataset.product);
             
-            // ✅ Verificar si ya tiene reseña para este producto
             const productId = this.selectedProduct.id || 
                             this.selectedProduct.idProducto || 
                             this.selectedProduct.ID_Producto || 
@@ -131,7 +126,7 @@ class ReviewManager {
             
             if (this.hasReviewForProduct(productId)) {
                 this.showWarningBanner(
-                    '⚠️ Ya has dejado una reseña para este producto. ' +
+                    'Ya has dejado una reseña para este producto. ' +
                     'Si deseas cambiarla, primero elimina la reseña existente desde "Mis Reseñas".'
                 );
             } else {
@@ -146,9 +141,7 @@ class ReviewManager {
         }
     }
 
-    // ✅ NUEVA FUNCIÓN: Mostrar banner de advertencia
     showWarningBanner(message) {
-        // Eliminar banner existente si hay alguno
         this.hideWarningBanner();
         
         const banner = document.createElement('div');
@@ -170,7 +163,7 @@ class ReviewManager {
         `;
         
         banner.innerHTML = `
-            <span style="font-size: 24px;">⚠️</span>
+            <span style="font-size: 24px;"></span>
             <div style="flex: 1;">
                 ${message}
                 <br>
@@ -184,7 +177,6 @@ class ReviewManager {
         form.insertBefore(banner, form.firstChild);
     }
 
-    // ✅ NUEVA FUNCIÓN: Ocultar banner de advertencia
     hideWarningBanner() {
         const existingBanner = document.getElementById('warningBanner');
         if (existingBanner) {
@@ -197,7 +189,6 @@ class ReviewManager {
         if (this.selectedProduct) {
             const imgElement = document.getElementById('productImage');
             
-            // ✅ Usar imagenUrl del backend
             const imgSrc = this.selectedProduct.imagenUrl || 
                           this.selectedProduct.imagen_url || 
                           this.selectedProduct.imagen || 
@@ -227,16 +218,14 @@ class ReviewManager {
         const rating = document.getElementById('ratingValue').value;
         const comment = document.getElementById('comment').value.trim();
 
-        // Validaciones
         if (!productId) {
             this.showNotification('Por favor selecciona un producto', 'error');
             return;
         }
 
-        // ✅ VALIDACIÓN CRÍTICA: Verificar si ya existe una reseña
         if (this.hasReviewForProduct(productId)) {
             this.showNotification(
-                '⚠️ Ya has dejado una reseña para este producto. ' +
+                ' Ya has dejado una reseña para este producto. ' +
                 'Para cambiarla, primero elimina la reseña existente.',
                 'error'
             );
@@ -273,10 +262,8 @@ class ReviewManager {
             if (result.success) {
                 this.showNotification('¡Reseña publicada exitosamente!', 'success');
                 
-                // ✅ Recargar las reseñas del usuario
                 await this.loadMyReviews();
                 
-                // Limpiar formulario
                 document.getElementById('reviewForm').reset();
                 this.selectedRating = 0;
                 this.selectedProduct = null;
@@ -286,7 +273,6 @@ class ReviewManager {
                     star.classList.remove('active');
                 });
 
-                // ✅ Actualizar el select para mostrar que ya fue reseñado
                 await this.loadProducts();
 
                 setTimeout(() => {
@@ -354,7 +340,6 @@ class ReviewManager {
     }
 }
 
-// ✅ Agregar estilos de animación
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideDown {
@@ -381,7 +366,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     window.reviewManager = new ReviewManager();
 });

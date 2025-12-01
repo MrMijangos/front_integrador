@@ -3,7 +3,7 @@ import authService from '../services/auth-service.js';
 import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('✅ mycards.js cargado correctamente');
+    console.log(' mycards.js cargado correctamente');
 
     localStorage.removeItem('isCheckoutFlow');
     navigationContext.clear();
@@ -33,9 +33,8 @@ async function loadPaymentMethods() {
     try {
         const result = await paymentService.getAllPaymentMethods();
 
-        console.log('📋 RESPUESTA COMPLETA:', JSON.stringify(result, null, 2));
+        console.log(' RESPUESTA COMPLETA:', JSON.stringify(result, null, 2));
 
-        // ✅ Normalizar la respuesta correctamente
         let paymentsArr = [];
 
         if (result.success && Array.isArray(result.data)) {
@@ -48,7 +47,7 @@ async function loadPaymentMethods() {
             paymentsArr = result;
         }
 
-        console.log('📦 Array normalizado:', paymentsArr);
+        console.log(' Array normalizado:', paymentsArr);
 
         container.innerHTML = '';
 
@@ -72,7 +71,7 @@ async function loadPaymentMethods() {
         listContainer.className = 'payment-methods-list';
 
         paymentsArr.forEach((card) => {
-            console.log('💳 Procesando tarjeta:', card);
+            console.log(' Procesando tarjeta:', card);
             const cardElement = createCardElement(card);
             listContainer.appendChild(cardElement);
         });
@@ -80,7 +79,7 @@ async function loadPaymentMethods() {
         container.appendChild(listContainer);
 
     } catch (error) {
-        console.error('❌ Error cargando métodos de pago:', error);
+        console.error(' Error cargando métodos de pago:', error);
         container.innerHTML = `
             <div style="text-align:center; padding:40px; color:#f44336;">
                 <p style="margin-bottom:10px;">Error al cargar tus tarjetas</p>
@@ -106,7 +105,6 @@ function createCardElement(card) {
         overflow: hidden;
     `;
 
-    // ✅ Extraer datos del backend
     const cardId = card.id || card.idMetodoPago || card.id_metodo_pago;
     const tipoTarjeta = (card.tipoTarjeta || card.tipo_tarjeta || 'credito').toUpperCase();
     const nombreTitular = card.nombreTitular || card.nombre_titular || 'Titular';
@@ -115,7 +113,6 @@ function createCardElement(card) {
     const anioExpiracion = card.anioExpiracion || card.anio_expiracion || '0000';
     const esPredeterminado = card.esPredeterminado || card.es_predeterminado || false;
 
-    // ✅ Determinar icono y color según el tipo
     let cardIcon = '💳';
     let cardColor = '#4CAF50';
     
@@ -211,7 +208,6 @@ function createCardElement(card) {
         </div>
     `;
 
-    // ✅ Efecto hover en toda la tarjeta
     div.onmouseover = () => {
         div.style.borderColor = cardColor;
         div.style.boxShadow = `0 6px 20px ${cardColor}30`;
@@ -233,7 +229,7 @@ window.deleteCard = async function (cardId, lastDigits) {
     }
 
     try {
-        console.log('🗑️ Eliminando tarjeta ID:', cardId);
+        console.log(' Eliminando tarjeta ID:', cardId);
 
         const result = await paymentService.deletePaymentMethod(cardId);
 
@@ -244,7 +240,7 @@ window.deleteCard = async function (cardId, lastDigits) {
             throw new Error(result.error || 'Error al eliminar tarjeta');
         }
     } catch (error) {
-        console.error('❌ Error eliminando tarjeta:', error);
+        console.error(' Error eliminando tarjeta:', error);
         showNotification('Error al eliminar la tarjeta: ' + error.message, 'error');
     }
 }
