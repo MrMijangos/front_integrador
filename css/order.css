@@ -328,109 +328,129 @@ body {
     display: flex;
 }
 
+/* Estilos adicionales para el botón de cancelación */
+
+.order-action-btn.cancel-btn {
+    background: #fff;
+    color: #f44336;
+    border: 2px solid #f44336;
+    transition: all 0.3s ease;
+}
+
+.order-action-btn.cancel-btn:hover {
+    background: #f44336;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.order-action-btn.cancel-btn svg {
+    stroke: currentColor;
+}
+
+/* Estado cancelado */
+.order-status.cancelled {
+    background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+    color: white;
+    border: none;
+}
+
+.order-status.cancelled .status-text {
+    font-weight: 600;
+}
+
+/* Animación de deslizamiento para notificaciones */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Contador de productos en pedidos */
+.order-items-count {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Mejoras para dropdown */
+.order-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.order-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 .order-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    width: 100%;
     padding: 12px 16px;
-    background: transparent;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 13px;
+    font-size: 0.9rem;
     font-weight: 600;
-    text-align: left;
-    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
 }
 
-.repurchase-btn {
-    color: #F9BD31;
+.order-action-btn:last-child {
+    margin-bottom: 0;
 }
 
-.repurchase-btn:hover {
-    background: rgba(249, 189, 49, 0.1);
+.order-action-btn.repurchase-btn {
+    background: linear-gradient(135deg, #F9BD31 0%, #f5a623 100%);
+    color: #000;
 }
 
-.cancel-btn {
-    color: #e53935;
+.order-action-btn.repurchase-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 189, 49, 0.4);
 }
 
-.cancel-btn:hover {
-    background: #ffebee;
-}
-
-.order-action-btn svg {
-    flex-shrink: 0;
-}
-
-/* ========== RESPONSIVE ========== */
-@media (max-width: 968px) {
-    .header-container {
-        flex-wrap: wrap;
-        padding: 0 20px;
-    }
-    
-    .search-bar {
-        order: 3;
-        flex-basis: 100%;
-        max-width: 100%;
-    }
-    
-    .orders-section {
-        padding: 30px 15px;
-    }
-    
-    .orders-header h1 {
-        font-size: 26px;
-    }
-    
-    .order-item {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .order-status-section {
-        align-items: stretch;
-    }
-    
+/* Responsive */
+@media (max-width: 768px) {
     .order-dropdown {
-        position: static;
-        width: 100%;
-    }
-}
-
-@media (max-width: 600px) {
-    .logo img {
-        width: 40px;
-        height: 40px;
+        min-width: 200px;
+        right: -10px;
     }
     
-    .icon-btn img {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .btn-back {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .orders-header h1 {
-        font-size: 22px;
-    }
-    
-    .order-main {
-        flex-direction: column;
-    }
-    
-    .order-image {
-        width: 100%;
-        height: 200px;
-    }
-    
-    .order-status {
-        width: 100%;
-        justify-content: center;
+    .order-action-btn {
+        font-size: 0.85rem;
+        padding: 10px 14px;
     }
 }

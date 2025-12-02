@@ -8,7 +8,7 @@ const API_BASE_URL = environment.apiUrl;
 let userMap = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('admin-shipments.js cargado');
+    console.log('🔧 admin-shipments.js cargado');
 
     if (!authService.isAuthenticated() || !authService.isAdmin()) {
         alert('Acceso restringido a administradores');
@@ -34,10 +34,9 @@ function setupTabs() {
     });
 }
 
-
 async function loadAllUsers() {
     try {
-        console.log(' Cargando directorio de usuarios...');
+        console.log('👥 Cargando directorio de usuarios...');
         const response = await fetch(`${API_BASE_URL}/api/usuarios`);
         const result = await response.json();
         
@@ -51,9 +50,9 @@ async function loadAllUsers() {
             };
         });
         
-        console.log(` ${Object.keys(userMap).length} usuarios cargados en memoria.`);
+        console.log(`✓ ${Object.keys(userMap).length} usuarios cargados en memoria.`);
     } catch (error) {
-        console.error(' Error cargando usuarios:', error);
+        console.error('❌ Error cargando usuarios:', error);
     }
 }
 
@@ -62,7 +61,7 @@ async function loadOrders() {
     container.innerHTML = '<p style="text-align:center; padding:20px;">Cargando pedidos...</p>';
 
     try {
-        console.log(' Cargando pedidos...');
+        console.log('📦 Cargando pedidos...');
         const result = await orderService.getAllOrders();
 
         if (!result.success || !result.data || result.data.length === 0) {
@@ -70,10 +69,13 @@ async function loadOrders() {
             return;
         }
 
-        
         const ordersWithUsers = result.data.map(order => {
-            const userId = order.idUsuario || order.id_usuario || order.usuarioId;
-            const userData = userMap[userId] || { nombre: 'Cliente (ID no encontrado)', correo: '-', telefono: '-' };
+            const userId = order.usuarioId || order.idUsuario || order.id_usuario;
+            const userData = userMap[userId] || { 
+                nombre: 'Cliente (ID no encontrado)', 
+                correo: '-', 
+                telefono: '-' 
+            };
             
             return {
                 ...order,
@@ -86,7 +88,7 @@ async function loadOrders() {
         filterShipments('pending');
 
     } catch (error) {
-        console.error(' Error cargando pedidos:', error);
+        console.error('❌ Error cargando pedidos:', error);
         container.innerHTML = '<p style="color:red; text-align:center;">Error de conexión al cargar pedidos.</p>';
     }
 }
@@ -95,32 +97,56 @@ function renderOrders(orders) {
     const container = document.getElementById('shipmentsList');
     container.innerHTML = '';
 
-    console.log(' Renderizando', orders.length, 'pedidos');
+    console.log('🎨 Renderizando', orders.length, 'pedidos');
 
     orders.forEach(order => {
-        const numeroPedido = order.numeroPedido || order.numero_pedido || order.NUMERO_PEDIDO || order.numero;
+        // ⚠️ CORRECCIÓN CRÍTICA: Obtener el orderId correctamente
+        const orderId = order.id || order.idPedido || order.ID_PEDIDO;
+        const numeroPedido = order.numeroPedido || order.numero_pedido || order.NUMERO_PEDIDO || order.numero || orderId;
         
         const estadoDB = (order.estado || 'pendiente').toLowerCase();
 
         let statusClass = 'pending';
         let actionButton = '';
+        let cancelButton = '';
 
+        // Determinar acciones según el estado
         if (['pendiente', 'creado', 'procesando'].includes(estadoDB)) {
             statusClass = 'pending';
-            actionButton = `<button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'ENVIADO')">MARCAR ENVIADO </button>`;
+            actionButton = `
+                <button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'enviado')">
+                    📦 MARCAR ENVIADO
+                </button>
+            `;
+            // 🆕 Botón de cancelación solo en pedidos pendientes
+            cancelButton = `
+                <button class="btn-cancel" onclick="window.cancelOrderAdmin(${orderId})">
+                    ✕ CANCELAR PEDIDO
+                </button>
+            `;
         } else if (['enviado', 'shipped'].includes(estadoDB)) {
             statusClass = 'shipped';
-            actionButton = `<button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'ENTREGADO')">MARCAR ENTREGADO </button>`;
+            actionButton = `
+                <button class="btn-update" onclick="window.updateOrderStatus(${orderId}, 'entregado')">
+                    ✓ MARCAR ENTREGADO
+                </button>
+            `;
+            // Los pedidos enviados ya no se pueden cancelar
+            cancelButton = '';
         } else if (['entregado', 'delivered', 'completada'].includes(estadoDB)) {
             statusClass = 'delivered';
             actionButton = `<span class="status-badge success">✓ COMPLETADO</span>`;
         } else if (estadoDB === 'cancelado') {
-            statusClass = 'delivered'; 
+            statusClass = 'cancelled'; // 🆕 Cambié de 'delivered' a 'cancelled'
             actionButton = `<span class="status-badge error">✕ CANCELADO</span>`;
         }
 
-        const fecha = new Date(order.fecha || order.fechaPedido || order.fecha_pedido || Date.now());
-        const fechaFormateada = fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+        const fecha = new Date(order.fechaPedido || order.fecha || order.fecha_pedido || Date.now());
+        const fechaFormateada = fecha.toLocaleDateString('es-MX', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
 
         const { nombre, correo, telefono } = order.usuarioData;
 
@@ -134,23 +160,24 @@ function renderOrders(orders) {
                     <img src="../images/usuario (1).png" alt="Pedido" class="shipment-image" onerror="this.src='../images/logo-placeholder.png'">
                     <div class="product-details">
                         <h3 class="product-name">Pedido #${numeroPedido}</h3>
-                        <p class="product-description"> Fecha: ${fechaFormateada}</p>
+                        <p class="product-description">📅 Fecha: ${fechaFormateada}</p>
                         <div class="product-quantity">Total: <strong>$${Number(order.total || 0).toFixed(2)}</strong></div>
-                        <p class="status-label">Estado: ${estadoDB.toUpperCase()}</p>
+                        <p class="status-label">Estado: <strong>${estadoDB.toUpperCase()}</strong></p>
                     </div>
                 </div>
                 
                 <div class="shipment-info">
-                    <h4 class="customer-name"> ${nombre}</h4>
+                    <h4 class="customer-name">👤 ${nombre}</h4>
                     <p class="customer-contact">
-                         ${correo}<br>
-                         ${telefono}
+                        📧 ${correo}<br>
+                        📱 ${telefono}
                     </p>
                 </div>
             </div>
             
             <div class="shipment-actions">
                 ${actionButton}
+                ${cancelButton}
             </div>
         `;
 
@@ -158,23 +185,61 @@ function renderOrders(orders) {
     });
 }
 
+/**
+ * Actualiza el estado de un pedido
+ */
 window.updateOrderStatus = async function(orderId, newStatus) {
-    if (!confirm(`¿Confirmar cambio de estado a "${newStatus}" para el pedido #${orderId}?`)) {
+    if (!confirm(`¿Confirmar cambio de estado a "${newStatus.toUpperCase()}" para el pedido #${orderId}?`)) {
         return;
     }
 
     try {
+        showNotification('Actualizando estado...', 'info');
+        
         const result = await orderService.updateOrderStatus(orderId, newStatus);
 
         if (result.success) {
-            showNotification(`Pedido #${orderId} actualizado a ${newStatus}`, 'success');
+            showNotification(`✓ Pedido #${orderId} actualizado a ${newStatus.toUpperCase()}`, 'success');
             await loadOrders(); 
         } else {
             throw new Error(result.error || 'Error desconocido');
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
         showNotification(error.message, 'error');
+    }
+}
+
+/**
+ * 🆕 Cancela un pedido (solo admin)
+ * Restaura automáticamente el stock de los productos
+ */
+window.cancelOrderAdmin = async function(orderId) {
+    // Confirmación doble para acción administrativa
+    if (!confirm('⚠️ ¿Estás seguro de que deseas CANCELAR este pedido?\n\nEsta acción:\n- Cambiará el estado a CANCELADO\n- Restaurará el stock de los productos\n\n¿Deseas continuar?')) {
+        return;
+    }
+
+    try {
+        showNotification('Cancelando pedido...', 'info');
+        
+        // Llamar al endpoint de cancelación para administradores
+        const result = await orderService.cancelOrderAdmin(orderId);
+
+        if (!result.success) {
+            throw new Error(result.error || 'Error al cancelar pedido');
+        }
+
+        showNotification(`✓ Pedido #${orderId} cancelado. Stock restaurado.`, 'success');
+        
+        // Recargar los pedidos después de 1 segundo
+        setTimeout(() => {
+            loadOrders();
+        }, 1000);
+
+    } catch (error) {
+        console.error('❌ Error cancelando pedido:', error);
+        showNotification(error.message || 'Error al cancelar el pedido', 'error');
     }
 }
 
@@ -188,6 +253,7 @@ function filterShipments(status) {
 
         if (status === 'pending' && itemStatus === 'pending') visible = true;
         if (status === 'shipped' && itemStatus === 'shipped') visible = true;
+        // 🆕 Los pedidos cancelados también aparecen en "ENTREGADOS"
         if (status === 'delivered' && (itemStatus === 'delivered' || itemStatus === 'cancelled')) visible = true;
 
         if (visible) {
@@ -224,7 +290,7 @@ function showNotification(message, type = 'success') {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
         color: white;
         padding: 16px 24px;
         border-radius: 8px;
